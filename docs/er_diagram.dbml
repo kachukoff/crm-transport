@@ -1,0 +1,86 @@
+// Скопируй на https://dbdiagram.io/d — получишь картинку.
+// Сохрани как docs/er_diagram.png
+
+Table users {
+  id integer [pk, increment]
+  email varchar [unique, not null]
+  password_hash varchar [not null]
+  role varchar [not null, note: 'admin | manager | driver']
+  full_name varchar [not null]
+  is_active boolean [default: true]
+  created_at timestamp [default: `now()`]
+}
+
+Table clients {
+  id integer [pk, increment]
+  type varchar [note: 'legal | individual']
+  name varchar [not null]
+  inn varchar
+  contact_person varchar
+  phone varchar
+  email varchar
+  address varchar
+  created_at timestamp [default: `now()`]
+}
+
+Table drivers {
+  id integer [pk, increment]
+  user_id integer [ref: > users.id]
+  full_name varchar [not null]
+  phone varchar
+  license_number varchar
+  status varchar [note: 'available | on_route | day_off | fired']
+  created_at timestamp [default: `now()`]
+}
+
+Table vehicles {
+  id integer [pk, increment]
+  plate_number varchar [unique, not null]
+  brand varchar
+  model varchar
+  vehicle_type varchar
+  capacity_kg integer
+  status varchar [note: 'available | on_route | maintenance']
+  created_at timestamp [default: `now()`]
+}
+
+Table routes {
+  id integer [pk, increment]
+  from_address varchar [not null]
+  to_address varchar [not null]
+  distance_km numeric
+  created_at timestamp [default: `now()`]
+}
+
+Table pricing_rules {
+  id integer [pk, increment]
+  vehicle_type varchar [not null]
+  base_rate numeric [not null]
+  price_per_km numeric [not null]
+  price_per_kg numeric [not null]
+}
+
+Table orders {
+  id integer [pk, increment]
+  client_id integer [ref: > clients.id, not null]
+  route_id integer [ref: > routes.id, not null]
+  driver_id integer [ref: > drivers.id]
+  vehicle_id integer [ref: > vehicles.id]
+  cargo_name varchar
+  weight_kg integer
+  price numeric
+  status varchar [note: 'new | assigned | in_progress | delivered | completed | cancelled']
+  source varchar [note: 'client_form | manager_manual']
+  created_by integer [ref: > users.id]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table order_status_history {
+  id integer [pk, increment]
+  order_id integer [ref: > orders.id, not null]
+  status varchar [not null]
+  changed_by integer [ref: > users.id]
+  changed_at timestamp [default: `now()`]
+  comment varchar
+}
