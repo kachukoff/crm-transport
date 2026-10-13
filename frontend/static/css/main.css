@@ -510,6 +510,23 @@ table {
   padding-top: 16px;
   border-top: 1px solid #e5e7eb;
 }
+.card--metric {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 110px;
+  overflow: hidden;
+}
+.card--metric::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: #4f46e5;
+}
 .card--metric .card__value {
   font-size: 28px;
   font-weight: 600;
@@ -519,6 +536,26 @@ table {
 .card--metric .card__label {
   font-size: 13px;
   color: #6b7280;
+}
+
+.card--accent-primary::before {
+  background-color: #4f46e5 !important;
+}
+
+.card--accent-success::before {
+  background-color: #10b981 !important;
+}
+
+.card--accent-warning::before {
+  background-color: #f59e0b !important;
+}
+
+.card--accent-danger::before {
+  background-color: #ef4444 !important;
+}
+
+.card--accent-info::before {
+  background-color: #3b82f6 !important;
 }
 
 .cards-grid {

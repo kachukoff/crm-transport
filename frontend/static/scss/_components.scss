@@ -153,6 +153,23 @@
 
   // Метрика (для Dashboard)
   &--metric {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 110px;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background-color: $color-primary;
+    }
+
     .card__value {
       font-size: $font-size-2xl;
       font-weight: $font-weight-bold;
@@ -166,6 +183,13 @@
     }
   }
 }
+
+// --- Цветные акценты для карточек-метрик ---
+.card--accent-primary::before { background-color: $color-primary !important; }
+.card--accent-success::before { background-color: $color-success !important; }
+.card--accent-warning::before { background-color: $color-warning !important; }
+.card--accent-danger::before  { background-color: $color-danger !important;  }
+.card--accent-info::before    { background-color: $color-info !important;    }
 
 // --- Сетка карточек (для Dashboard) ---
 .cards-grid {
