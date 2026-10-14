@@ -265,3 +265,119 @@
     }
   }
 }
+
+// --- Order Detail ---
+.order-detail {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: $space-6;
+  align-items: start;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+  }
+
+  &__side {
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+  }
+}
+
+// Информационные строки
+.info-list {
+  display: flex;
+  flex-direction: column;
+
+  &__row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: $space-4;
+    padding: $space-3 0;
+    border-bottom: 1px solid $color-border;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+  }
+
+  &__value {
+    font-size: $font-size-base;
+    color: $color-text;
+  }
+}
+
+// Таймлайн статусов
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  &__item {
+    display: flex;
+    gap: $space-3;
+    align-items: flex-start;
+
+    &-dot {
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: $radius-full;
+      margin-top: 4px;
+      background-color: $color-border;
+    }
+
+    &--active &-dot {
+      background-color: $color-primary;
+    }
+
+    &--success &-dot {
+      background-color: $color-success;
+    }
+
+    &--danger &-dot {
+      background-color: $color-danger;
+    }
+
+    &-content {
+      flex: 1;
+    }
+  }
+
+  &__time {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    margin-bottom: $space-1;
+  }
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text;
+    margin-bottom: $space-1;
+  }
+
+  &__comment {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+  }
+}
+
+// --- Order Detail: адаптация info-list в узкой колонке ---
+.order-detail__side {
+  .info-list__row {
+    grid-template-columns: 1fr;
+    gap: $space-1;
+  }
+}
