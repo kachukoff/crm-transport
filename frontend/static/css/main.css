@@ -867,4 +867,118 @@ table {
   border-top: 1px solid #e5e7eb;
 }
 
+.order-request-page {
+  min-height: 100vh;
+  padding: 24px 16px;
+  background-color: #f7f8fa;
+}
+
+.order-request-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.order-request-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+.order-request-header__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: #4f46e5;
+  color: #ffffff;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.order-request-title {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.order-request-title__heading {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.order-request-title__subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.order-request-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.order-request-form__section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.order-request-form__section-title {
+  font-size: 16px;
+  font-weight: 600;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.order-request-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 600px) {
+  .order-request-form__row {
+    grid-template-columns: 1fr;
+  }
+}
+.order-request-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+.order-request-form__price-preview {
+  padding: 16px;
+  background-color: #eef2ff;
+  border-radius: 8px;
+  border-left: 4px solid #4f46e5;
+}
+.order-request-form__price-preview-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+.order-request-form__price-preview-value {
+  font-size: 22px;
+  font-weight: 600;
+  color: #4f46e5;
+}
+.order-request-form__price-preview-hint {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+.order-request-form__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+.order-request-form__footer-link {
+  font-size: 13px;
+  color: #6b7280;
+}
+
 /*# sourceMappingURL=main.css.map */
