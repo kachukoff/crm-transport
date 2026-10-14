@@ -105,6 +105,11 @@
   padding-right: $space-8;
 }
 
+.select--auto {
+  width: auto;
+  min-width: 160px;
+}
+
 // --- Чекбоксы / радио ---
 .checkbox {
   display: inline-flex;
