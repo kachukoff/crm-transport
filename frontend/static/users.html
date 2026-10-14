@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Пользователи — CRM Транспорт</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar">
+      <div class="sidebar__logo">
+        <span class="sidebar__logo-mark">T</span>
+        <span>CRM Транспорт</span>
+      </div>
+      <nav class="sidebar__nav">
+        <a href="index.html" class="sidebar__link">
+          <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="9" rx="1" />
+            <rect x="14" y="3" width="7" height="5" rx="1" />
+            <rect x="14" y="12" width="7" height="9" rx="1" />
+            <rect x="3" y="16" width="7" height="5" rx="1" />
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="orders.html" class="sidebar__link">
+          <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 11l3 3L22 4" />
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+          </svg>
+          <span>Заказы</span>
+        </a>
+        <a href="clients.html" class="sidebar__link">
+          <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87" />
+            <path d="M16 3.13a4 4 0 010 7.75" />
+          </svg>
+          <span>Клиенты</span>
+        </a>
+        <a href="drivers.html" class="sidebar__link">
+          <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" />
+          </svg>
+          <span>Водители</span>
+        </a>
+        <a href="vehicles.html" class="sidebar__link">
+          <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 3h15v13H1z" />
+            <path d="M16 8h4l3 3v5h-7V8z" />
+            <circle cx="5.5" cy="18.5" r="2.5" />
+            <circle cx="18.5" cy="18.5" r="2.5" />
+          </svg>
+          <span>Машины</span>
+        </a>
+        <a href="pricing.html" class="sidebar__link">
+          <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+          </svg>
+          <span>Тарифы</span>
+        </a>
+        <a href="users.html" class="sidebar__link is-active">
+          <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <span>Пользователи</span>
+        </a>
+      </nav>
+      <div class="sidebar__footer">
+        <a href="profile.html" class="sidebar__user">
+          <div class="sidebar__user-avatar">АМ</div>
+          <div class="sidebar__user-info">
+            <span class="sidebar__user-name">Анна Морозова</span>
+            <span class="sidebar__user-role">Менеджер</span>
+          </div>
+        </a>
+      </div>
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <div class="main">
+      <header class="header">
+        <div>
+          <h1 class="header__title">Пользователи</h1>
+        </div>
+        <div class="header__actions">
+          <button class="btn btn--secondary btn--sm">Экспорт</button>
+        </div>
+      </header>
+      <div class="content">
+        <div class="page-header">
+          <div>
+            <h2 class="page-header__title">Пользователи</h2>
+            <p class="page-header__subtitle">Сотрудники системы с доступом к CRM</p>
+          </div>
+          <div class="page-header__actions">
+            <button class="btn btn--primary">+ Добавить пользователя</button>
+          </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+          <input class="input toolbar__search" type="search" placeholder="Поиск по ФИО или email...">
+          <select class="select select--auto">
+            <option value="">Все роли</option>
+            <option value="admin">Администратор</option>
+            <option value="manager">Менеджер</option>
+            <option value="driver">Водитель</option>
+          </select>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ФИО</th>
+                <th>Email</th>
+                <th>Роль</th>
+                <th>Статус</th>
+                <th>Последний вход</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Морозова Анна Сергеевна</strong></td>
+                <td>a.morozova@crm.ru</td>
+                <td><span class="badge badge--primary">Менеджер</span></td>
+                <td><span class="badge badge--success">Активен</span></td>
+                <td class="table__cell-muted">13.10.2026 09:14</td>
+                <td class="table__cell-actions">
+                  <a href="user-detail.html" class="btn btn--ghost btn--sm">Открыть</a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Соколов Игорь Петрович</strong></td>
+                <td>i.sokolov@crm.ru</td>
+                <td><span class="badge badge--danger">Администратор</span></td>
+                <td><span class="badge badge--success">Активен</span></td>
+                <td class="table__cell-muted">13.10.2026 08:02</td>
+                <td class="table__cell-actions">
+                  <a href="user-detail.html" class="btn btn--ghost btn--sm">Открыть</a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Иванов Иван Иванович</strong></td>
+                <td>i.ivanov@crm.ru</td>
+                <td><span class="badge badge--info">Водитель</span></td>
+                <td><span class="badge badge--success">Активен</span></td>
+                <td class="table__cell-muted">13.10.2026 07:45</td>
+                <td class="table__cell-actions">
+                  <a href="user-detail.html" class="btn btn--ghost btn--sm">Открыть</a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Петров Пётр Петрович</strong></td>
+                <td>p.petrov@crm.ru</td>
+                <td><span class="badge badge--info">Водитель</span></td>
+                <td><span class="badge badge--success">Активен</span></td>
+                <td class="table__cell-muted">12.10.2026 18:20</td>
+                <td class="table__cell-actions">
+                  <a href="user-detail.html" class="btn btn--ghost btn--sm">Открыть</a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Сидоров Сергей Сергеевич</strong></td>
+                <td>s.sidorov@crm.ru</td>
+                <td><span class="badge badge--info">Водитель</span></td>
+                <td><span class="badge badge--success">Активен</span></td>
+                <td class="table__cell-muted">12.10.2026 17:05</td>
+                <td class="table__cell-actions">
+                  <a href="user-detail.html" class="btn btn--ghost btn--sm">Открыть</a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Кузнецов Алексей Дмитриевич</strong></td>
+                <td>a.kuznetsov@crm.ru</td>
+                <td><span class="badge badge--info">Водитель</span></td>
+                <td><span class="badge badge--neutral">Заблокирован</span></td>
+                <td class="table__cell-muted">01.09.2026 10:30</td>
+                <td class="table__cell-actions">
+                  <a href="user-detail.html" class="btn btn--ghost btn--sm">Открыть</a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Смирнов Дмитрий Олегович</strong></td>
+                <td>d.smirnov@crm.ru</td>
+                <td><span class="badge badge--info">Водитель</span></td>
+                <td><span class="badge badge--neutral">Заблокирован</span></td>
+                <td class="table__cell-muted">—</td>
+                <td class="table__cell-actions">
+                  <a href="user-detail.html" class="btn btn--ghost btn--sm">Открыть</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination">
+            <div>Показано 1–7 из 12</div>
+            <div class="pagination__controls">
+              <button class="pagination__btn" disabled>←</button>
+              <button class="pagination__btn is-active">1</button>
+              <button class="pagination__btn">2</button>
+              <button class="pagination__btn">→</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
