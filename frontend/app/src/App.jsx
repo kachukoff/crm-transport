@@ -1,10 +1,19 @@
+import Layout from './components/Layout.jsx'
+import Dashboard from './pages/Dashboard.jsx'
+
 function App() {
   return (
-    <div style={{ padding: '40px', fontFamily: 'sans-serif' }}>
-      <h1>Test React</h1>
-      <p>Если видишь этот текст с правильным шрифтом — React работает.</p>
-      <button className="btn btn--primary">Тестовая кнопка</button>
-    </div>
+    <Layout
+      title="Dashboard"
+      headerActions={
+        <>
+          <button className="btn btn--secondary btn--sm">Сегодня</button>
+          <button className="btn btn--primary btn--sm">+ Новый заказ</button>
+        </>
+      }
+    >
+      <Dashboard />
+    </Layout>
   )
 }
 
