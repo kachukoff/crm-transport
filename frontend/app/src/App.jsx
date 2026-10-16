@@ -1,18 +1,15 @@
 import Layout from './components/Layout.jsx'
-import Dashboard from './pages/Dashboard.jsx'
+import Drivers from './pages/Drivers.jsx'
 
 function App() {
   return (
     <Layout
-      title="Dashboard"
+      title="Водители"
       headerActions={
-        <>
-          <button className="btn btn--secondary btn--sm">Сегодня</button>
-          <button className="btn btn--primary btn--sm">+ Новый заказ</button>
-        </>
+        <button className="btn btn--secondary btn--sm">Экспорт</button>
       }
     >
-      <Dashboard />
+      <Drivers />
     </Layout>
   )
 }
