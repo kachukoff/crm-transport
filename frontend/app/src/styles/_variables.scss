@@ -1,0 +1,101 @@
+// ============================================
+// Переменные: цвета, отступы, тени, шрифты, радиусы
+// ============================================
+
+// --- Цвета: светлая тема (по умолчанию) ---
+$color-bg:            #f7f8fa;
+$color-surface:       #ffffff;
+$color-surface-alt:   #f1f3f5;
+$color-border:        #e5e7eb;
+$color-border-strong: #d1d5db;
+
+$color-text:          #111827;
+$color-text-muted:    #6b7280;
+$color-text-invert:   #ffffff;
+
+$color-primary:       #4f46e5;
+$color-primary-hover: #4338ca;
+$color-primary-soft:  #eef2ff;
+
+$color-success:       #10b981;
+$color-success-soft:  #ecfdf5;
+$color-warning:       #f59e0b;
+$color-warning-soft:  #fffbeb;
+$color-danger:        #ef4444;
+$color-danger-soft:   #fef2f2;
+$color-info:          #3b82f6;
+$color-info-soft:     #eff6ff;
+
+// Тёмные варианты цветов (для текста на мягких фонах: alerts и т.п.)
+$color-info-text:    #1d4ed8;
+$color-success-text: #047857;
+$color-warning-text: #b45309;
+$color-danger-text:  #b91c1c;
+
+// --- Тёмная тема ---
+// Значения будут переопределяться через CSS-переменные.
+
+// --- Типографика ---
+$font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   "Helvetica Neue", Arial, sans-serif;
+$font-family-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono",
+                   Consolas, monospace;
+
+$font-size-xs:   12px;
+$font-size-sm:   13px;
+$font-size-base: 14px;
+$font-size-md:   16px;
+$font-size-lg:   18px;
+$font-size-xl:   22px;
+$font-size-2xl:  28px;
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-bold:   600;
+
+$line-height-tight:  1.25;
+$line-height-base:   1.5;
+$line-height-loose:  1.7;
+
+// --- Отступы (шкала 4px) ---
+$space-1:  4px;
+$space-2:  8px;
+$space-3:  12px;
+$space-4:  16px;
+$space-5:  20px;
+$space-6:  24px;
+$space-8:  32px;
+$space-10: 40px;
+$space-12: 48px;
+$space-16: 64px;
+
+// --- Радиусы ---
+$radius-sm:   4px;
+$radius-md:   8px;
+$radius-lg:   12px;
+$radius-xl:   16px;
+$radius-full: 9999px;
+
+// --- Тени ---
+$shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.04);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
+
+// --- Переходы ---
+$transition-fast:   0.12s ease;
+$transition-base:   0.2s ease;
+$transition-slow:   0.3s ease;
+
+// --- Layout-константы ---
+$sidebar-width:         240px;
+$sidebar-width-collapsed: 64px;
+$header-height:         60px;
+$container-max-width:   1280px;
+
+// --- Z-index ---
+$z-sidebar:  100;
+$z-header:   200;
+$z-dropdown: 300;
+$z-modal:    400;
+$z-toast:    500;
