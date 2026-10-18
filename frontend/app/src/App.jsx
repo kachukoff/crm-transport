@@ -21,7 +21,6 @@ function App() {
             headerActions={
               <>
                 <button className="btn btn--secondary btn--sm">Сегодня</button>
-                <button className="btn btn--primary btn--sm">+ Новый заказ</button>
               </>
             }
           >
@@ -36,7 +35,7 @@ function App() {
           <Layout
             title="Заказы"
             headerActions={
-              <button className="btn btn--secondary btn--sm">Экспорт</button>
+              <button className="btn btn--secondary btn--sm">Экспорт в xlsx</button>
             }
           >
             <Orders />
@@ -50,7 +49,7 @@ function App() {
           <Layout
             title="Клиенты"
             headerActions={
-              <button className="btn btn--primary btn--sm">+ Добавить клиента</button>
+              <button className="btn btn--secondary btn--sm">Экспорт в xlsx</button>
             }
           >
             <Clients />
@@ -64,7 +63,7 @@ function App() {
           <Layout
             title="Водители"
             headerActions={
-              <button className="btn btn--secondary btn--sm">Экспорт</button>
+              <button className="btn btn--secondary btn--sm">Экспорт в xlsx</button>
             }
           >
             <Drivers />
@@ -78,7 +77,7 @@ function App() {
           <Layout
             title="Машины"
             headerActions={
-              <button className="btn btn--primary btn--sm">+ Добавить машину</button>
+              <button className="btn btn--secondary btn--sm">Экспорт в xlsx</button>
             }
           >
             <Vehicles />
@@ -100,9 +99,6 @@ function App() {
         element={
           <Layout
             title="Пользователи"
-            headerActions={
-              <button className="btn btn--primary btn--sm">+ Добавить пользователя</button>
-            }
           >
             <Users />
           </Layout>
