@@ -1,7 +1,7 @@
 services:
   frontend:
     build:
-      context: ./frontend/app
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: crm-frontend
     ports:
