@@ -1,20 +1,27 @@
-FROM node:20-alpine AS build
+FROM python:3.13-alpine3.23 AS base
+ENV POETRY_VERSION=2.3.3 \
+    POETRY_HOME="/opt/poetry" \
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_NO_INTERACTION=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+RUN apk add --no-cache curl libpq \
+    && addgroup -g 1000 -S appgroup \
+    && adduser -u 1000 -S appuser -G appgroup
+RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN ln -s /opt/poetry/bin/poetry /usr/local/bin/poetry
 
-COPY . .
-RUN npm run build
+COPY pyproject.toml poetry.lock ./
 
+FROM base AS builder
+RUN apk add --no-cache gcc musl-dev postgresql-dev
+RUN poetry install --no-root --only main
 
-FROM nginx:stable-alpine
-
-COPY --from=build /app/dist /usr/share/nginx/html
-
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+FROM base AS runtime
+COPY --from=builder /app/.venv /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+COPY ./app ./app
+USER appuser
