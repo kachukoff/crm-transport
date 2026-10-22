@@ -15,7 +15,7 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     if result.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    # Создаём пользователя (пароль пока в открытом виде, хеширование добавим позже)
+    # Создаём пользователя (добавить хеширование)
     db_user = User(
         email=user.email,
         full_name=user.full_name,

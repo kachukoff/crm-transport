@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.database import engine, Base
 from app import models
-from app.routers import users
+from app.routers import users, clients
 
 
 @asynccontextmanager
@@ -17,7 +17,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Подключаем роуты
 app.include_router(users.router)
+app.include_router(clients.router)
 
 @app.get("/health")
 async def health_check():
