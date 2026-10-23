@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.database import engine, Base
 from app import models
-from app.routers import users, clients, drivers, vehicles
+from app.routers import users, clients, drivers, vehicles, pricing, routes, orders
 
 
 @asynccontextmanager
@@ -22,6 +22,9 @@ app.include_router(users.router)
 app.include_router(clients.router)
 app.include_router(drivers.router)
 app.include_router(vehicles.router)
+app.include_router(pricing.router)
+app.include_router(routes.router)
+app.include_router(orders.router)
 
 @app.get("/health")
 async def health_check():
