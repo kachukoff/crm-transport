@@ -16,6 +16,7 @@ class DriverCreate(DriverBase):
 class DriverResponse(DriverBase):
   id: int
   created_at: datetime
+  vehicle_plate: Optional[str] = None
 
   class Config:
     from_attributes = True
