@@ -2,7 +2,30 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
-# Базовые поля, которые приходят при создании заказа
+
+#Вложенные схемы для отображения имен вместо ID
+class ClientShort(BaseModel):
+  name: str
+  class Config:
+    from_attributes = True
+
+class DriverShort(BaseModel):
+  full_name: str
+  class Config:
+    from_attributes = True
+
+class VehicleShort(BaseModel):
+  plate_number: str
+  class Config:
+    from_attributes = True
+
+class RouteShort(BaseModel):
+  from_address: str
+  to_address: str
+  class Config:
+    from_attributes = True
+
+# Базовая схема
 class OrderBase(BaseModel):
   client_id: int
   route_id: int
@@ -27,6 +50,11 @@ class OrderResponse(OrderBase):
   status: str
   created_at: datetime
   updated_at: datetime
+
+  client: Optional[ClientShort] = None
+  route: Optional[RouteShort] = None
+  driver: Optional[DriverShort] = None
+  vehicle: Optional[VehicleShort] = None
 
   class Config:
     from_attributes = True

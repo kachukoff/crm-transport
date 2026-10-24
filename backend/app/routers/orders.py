@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from sqlalchemy import select
 from app.database import get_db
 from app.models.order import Order, OrderStatusHistory
@@ -21,7 +22,18 @@ async def create_order(order: OrderCreate, db: AsyncSession = Depends(get_db)):
 
 @router.get("/", response_model=list[OrderResponse])
 async def get_orders(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Order).order_by(Order.id.desc()))
+    # selectinload подтягивает связанные таблицы
+    query = (
+        select(Order)
+        .options(
+            selectinload(Order.client),
+            selectinload(Order.route),
+            selectinload(Order.driver),
+            selectinload(Order.vehicle)
+        )
+        .order_by(Order.id) # Order.id.desc()
+    )
+    result = await db.execute(query)
     return result.scalars().all()
 
 
