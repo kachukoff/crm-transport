@@ -1,17 +1,39 @@
+import { useState, useEffect } from 'react';
+import { api } from '../api/client';
+
 function Drivers() {
+  const [drivers, setDrivers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Загружаем данные при монтировании компонента
+  useEffect(() => {
+    api.get('/drivers/')
+      .then(data => {
+        setDrivers(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error}</div>;
+
   return (
     <>
       <div className="page-header">
         <div>
           <h2 className="page-header__title">Все водители</h2>
-          <p className="page-header__subtitle">Всего: 5 водителей</p>
+          <p className="page-header__subtitle">Всего: {drivers.length} водителей</p>
         </div>
         <div className="page-header__actions">
           <button className="btn btn--primary">+ Добавить водителя</button>
         </div>
       </div>
 
-      {/* -- TOOLBAR -- */}
       <div className="toolbar">
         <input className="input toolbar__search" type="search" placeholder="Поиск по ФИО или телефону..." />
         <select className="select select--auto">
@@ -23,7 +45,6 @@ function Drivers() {
         </select>
       </div>
 
-      {/* -- TABLE -- */}
       <div className="table-wrapper">
         <table className="table">
           <thead>
@@ -37,60 +58,40 @@ function Drivers() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td><strong>Иванов Иван Иванович</strong></td>
-              <td>+7 (999) 123-45-67</td>
-              <td className="table__cell-muted">77 АА 123456</td>
-              <td><span className="badge badge--success">Свободен</span></td>
-              <td>А123БВ 77</td>
-              <td className="table__cell-actions">
-                <a href="driver-detail.html" className="btn btn--ghost btn--sm">Открыть</a>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Петров Пётр Петрович</strong></td>
-              <td>+7 (999) 234-56-78</td>
-              <td className="table__cell-muted">50 ББ 234567</td>
-              <td><span className="badge badge--warning">В рейсе</span></td>
-              <td>В456ГД 50</td>
-              <td className="table__cell-actions">
-                <a href="driver-detail.html" className="btn btn--ghost btn--sm">Открыть</a>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Сидоров Сергей Сергеевич</strong></td>
-              <td>+7 (999) 345-67-89</td>
-              <td className="table__cell-muted">99 ВВ 345678</td>
-              <td><span className="badge badge--success">Свободен</span></td>
-              <td>Е789ЖЗ 99</td>
-              <td className="table__cell-actions">
-                <a href="driver-detail.html" className="btn btn--ghost btn--sm">Открыть</a>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Кузнецов Алексей Дмитриевич</strong></td>
-              <td>+7 (999) 456-78-90</td>
-              <td className="table__cell-muted">77 ГГ 456789</td>
-              <td><span className="badge badge--neutral">Выходной</span></td>
-              <td className="table__cell-muted">—</td>
-              <td className="table__cell-actions">
-                <a href="driver-detail.html" className="btn btn--ghost btn--sm">Открыть</a>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Смирнов Дмитрий Олегович</strong></td>
-              <td>+7 (999) 567-89-01</td>
-              <td className="table__cell-muted">50 ДД 567890</td>
-              <td><span className="badge badge--danger">Уволен</span></td>
-              <td className="table__cell-muted">—</td>
-              <td className="table__cell-actions">
-                <a href="driver-detail.html" className="btn btn--ghost btn--sm">Открыть</a>
-              </td>
-            </tr>
+            {drivers.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="table__empty">Нет данных</td>
+              </tr>
+            ) : (
+              drivers.map(driver => (
+                <tr key={driver.id}>
+                  <td><strong>{driver.full_name}</strong></td>
+                  <td>{driver.phone || '—'}</td>
+                  <td className="table__cell-muted">{driver.license_number || '—'}</td>
+                  <td>
+                    <span className={`badge ${
+                      driver.status === 'available' ? 'badge--success' :
+                      driver.status === 'on_route' ? 'badge--warning' :
+                      driver.status === 'day_off' ? 'badge--neutral' : 'badge--danger'
+                    }`}>
+                      {driver.status === 'available' ? 'Свободен' :
+                       driver.status === 'on_route' ? 'В рейсе' :
+                       driver.status === 'day_off' ? 'Выходной' : 'Уволен'}
+                    </span>
+                  </td>
+                  <td className="table__cell-muted">{driver.vehicle_plate || '—'}</td> 
+                  <td className="table__cell-actions">
+                    <button className="btn btn--ghost btn--sm">Открыть</button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
+        
+        {/* Пагинация (пока статичная) */}
         <div className="pagination">
-          <div>Показано 1–5 из 5</div>
+          <div>Показано 1–{drivers.length} из {drivers.length}</div>
           <div className="pagination__controls">
             <button className="pagination__btn" disabled>←</button>
             <button className="pagination__btn is-active">1</button>
