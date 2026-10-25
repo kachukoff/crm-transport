@@ -66,7 +66,8 @@ async def seed_data():
             {"from_address": "Москва", "to_address": "Владимир", "distance_km": 185},
             {"from_address": "Химки", "to_address": "Тверь", "distance_km": 170},
             {"from_address": "Москва", "to_address": "Смоленск", "distance_km": 400},
-            {"from_address": "Москва", "to_address": "Нижний Новгород", "distance_km": 420},
+            {"from_address": "Москва",
+                "to_address": "Нижний Новгород", "distance_km": 420},
             {"from_address": "Москва", "to_address": "Ярославль", "distance_km": 270},
             {"from_address": "Тула", "to_address": "Орёл", "distance_km": 180},
             {"from_address": "Москва", "to_address": "Липецк", "distance_km": 450},
@@ -216,8 +217,22 @@ async def seed_data():
         orders = [Order(**data) for data in orders_data]
         session.add_all(orders)
 
+        # ==========================================
+        # 7. ПОЛЬЗОВАТЕЛИ
+        # ==========================================
+        users_data = [
+            {"email": "admin@crm.ru", "password_hash": "admin123",
+                "full_name": "Соколов Игорь Петрович", "role": "admin"},
+            {"email": "manager@crm.ru", "password_hash": "manager123",
+                "full_name": "Морозова Анна Сергеевна", "role": "manager"},
+            {"email": "driver@crm.ru", "password_hash": "driver123",
+                "full_name": "Иванов Иван Иванович", "role": "driver"},
+        ]
+        users = [User(**data) for data in users_data]
+        session.add_all(users)
+
         await session.commit()
-        print("База успешно заполнена тестовыми данными! (По 12 записей в каждой таблице)")
+        print("База успешно заполнена!")
 
 if __name__ == "__main__":
     asyncio.run(seed_data())
