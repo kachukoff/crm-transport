@@ -11,9 +11,9 @@ from app.models.order import Order
 
 
 async def seed_data():
-    # Создаём таблицы, если их нет
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Теперь таблицы создает Alembic, этот блок больше не нужен:
+    # async with engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.create_all)
 
     async with AsyncSessionLocal() as session:
         # Проверяем, есть ли уже водители
