@@ -17,4 +17,35 @@ services:
     container_name: crm-backend
     volumes:
       - ./backend/app:/app/app
-    command: "uvicorn app.main:app --host 0.0.0.0 --port 8000"
+      - ./backend/alembic.ini:/app/alembic.ini
+      - ./backend/alembic:/app/alembic
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    command: "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: postgres:14-alpine3.23
+    container_name: crm-database
+    ports:
+      - "5432:5432"
+    shm_size: 128mb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  postgres_data:
