@@ -8,6 +8,7 @@ from app.models.vehicle import Vehicle
 from app.models.route import Route
 from app.models.pricing import PricingRule
 from app.models.order import Order
+from app.security import hash_password
 
 
 async def seed_data():
@@ -221,12 +222,9 @@ async def seed_data():
         # 7. ПОЛЬЗОВАТЕЛИ
         # ==========================================
         users_data = [
-            {"email": "admin@crm.ru", "password_hash": "admin123",
-                "full_name": "Соколов Игорь Петрович", "role": "admin"},
-            {"email": "manager@crm.ru", "password_hash": "manager123",
-                "full_name": "Морозова Анна Сергеевна", "role": "manager"},
-            {"email": "driver@crm.ru", "password_hash": "driver123",
-                "full_name": "Иванов Иван Иванович", "role": "driver"},
+            {"email": "admin@crm.ru", "password_hash": hash_password("admin123"), "full_name": "Соколов Игорь Петрович", "role": "admin"},
+            {"email": "manager@crm.ru", "password_hash": hash_password("manager123"), "full_name": "Морозова Анна Сергеевна", "role": "manager"},
+            {"email": "driver@crm.ru", "password_hash": hash_password("driver123"), "full_name": "Иванов Иван Иванович", "role": "driver"},
         ]
         users = [User(**data) for data in users_data]
         session.add_all(users)
