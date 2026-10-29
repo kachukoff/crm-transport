@@ -409,3 +409,59 @@
     border-color: $color-danger;
   }
 }
+
+// --- Модальное окно ---
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-modal;
+  padding: $space-4;
+}
+
+.modal-content {
+  background-color: $color-surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-4 $space-6;
+  border-bottom: 1px solid $color-border;
+
+  h3 {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: $color-text-muted;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+
+  &:hover {
+    color: $color-text;
+  }
+}
+
+.modal-body {
+  padding: $space-6;
+}
