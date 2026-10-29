@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import Login from './pages/Login.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Drivers from './pages/Drivers.jsx'
 import Orders from './pages/Orders.jsx'
@@ -12,110 +14,57 @@ import Profile from './pages/Profile.jsx'
 function App() {
   return (
     <Routes>
+      <Route path="/login" element={<Login />} />
 
-      <Route
-        path="/"
-        element={
-          <Layout
-            title="Dashboard"
-            headerActions={
-              <>
-                <button className="btn btn--secondary btn--sm">Сегодня</button>
-              </>
-            }
-          >
-            <Dashboard />
-          </Layout>
-        }
-      />
+      <Route path="/" element={
+        <ProtectedRoute>
+          <Layout title="Dashboard"><Dashboard /></Layout>
+        </ProtectedRoute>
+      } />
 
-      <Route
-        path="/orders"
-        element={
-          <Layout
-            title="Заказы"
-            headerActions={
-              <button className="btn btn--secondary btn--sm">Экспорт в xlsx</button>
-            }
-          >
-            <Orders />
-          </Layout>
-        }
-      />
+      <Route path="/orders" element={
+        <ProtectedRoute>
+          <Layout title="Заказы"><Orders /></Layout>
+        </ProtectedRoute>
+      } />
 
-      <Route
-        path="/clients"
-        element={
-          <Layout
-            title="Клиенты"
-            headerActions={
-              <button className="btn btn--secondary btn--sm">Экспорт в xlsx</button>
-            }
-          >
-            <Clients />
-          </Layout>
-        }
-      />
+      <Route path="/clients" element={
+        <ProtectedRoute>
+          <Layout title="Клиенты"><Clients /></Layout>
+        </ProtectedRoute>
+      } />
 
-      <Route
-        path="/drivers"
-        element={
-          <Layout
-            title="Водители"
-            headerActions={
-              <button className="btn btn--secondary btn--sm">Экспорт в xlsx</button>
-            }
-          >
-            <Drivers />
-          </Layout>
-        }
-      />
+      <Route path="/drivers" element={
+        <ProtectedRoute>
+          <Layout title="Водители"><Drivers /></Layout>
+        </ProtectedRoute>
+      } />
 
-      <Route
-        path="/vehicles"
-        element={
-          <Layout
-            title="Машины"
-            headerActions={
-              <button className="btn btn--secondary btn--sm">Экспорт в xlsx</button>
-            }
-          >
-            <Vehicles />
-          </Layout>
-        }
-      />
+      <Route path="/vehicles" element={
+        <ProtectedRoute>
+          <Layout title="Машины"><Vehicles /></Layout>
+        </ProtectedRoute>
+      } />
 
-      <Route
-        path="/pricing"
-        element={
-          <Layout title="Тарифы" >
-            <Pricing />
-          </Layout>
-        }
-      />
+      <Route path="/pricing" element={
+        <ProtectedRoute>
+          <Layout title="Тарифы"><Pricing /></Layout>
+        </ProtectedRoute>
+      } />
 
-      <Route
-        path="/users"
-        element={
-          <Layout
-            title="Пользователи"
-          >
-            <Users />
-          </Layout>
-        }
-      />
+      <Route path="/users" element={
+        <ProtectedRoute>
+          <Layout title="Пользователи"><Users /></Layout>
+        </ProtectedRoute>
+      } />
 
-      <Route
-        path="/profile"
-        element={
-          <Layout title="Профиль">
-            <Profile />
-          </Layout>
-        }
-      />
-
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <Layout title="Профиль"><Profile /></Layout>
+        </ProtectedRoute>
+      } />
     </Routes>
-  )
+  );
 }
 
 export default App

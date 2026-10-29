@@ -1,9 +1,18 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const navLinkClass = ({ isActive }) =>
-  isActive ? 'sidebar__link is-active' : 'sidebar__link'
+  isActive ? 'sidebar__link is-active' : 'sidebar__link';
 
 function Sidebar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
   return (
     <aside className="sidebar">
 
@@ -22,7 +31,7 @@ function Sidebar() {
           </svg>
           <span>Dashboard</span>
         </NavLink>
-        
+
         <NavLink to="/orders" end className={navLinkClass}>
           <svg className="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9 11l3 3L22 4" />
@@ -77,17 +86,22 @@ function Sidebar() {
       </nav>
 
       <div className="sidebar__footer">
-        <NavLink to="/profile" className="sidebar__user">
-          <div className="sidebar__user-avatar">АМ</div>
-          <div className="sidebar__user-info">
-            <span className="sidebar__user-name">Анна Морозова</span>
-            <span className="sidebar__user-role">Менеджер</span>
+        <div className="sidebar__user">
+          <div className="sidebar__user-avatar">
+            {user ? user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '??'}
           </div>
-        </NavLink>
+          <div className="sidebar__user-info">
+            <span className="sidebar__user-name">{user ? user.full_name : 'Гость'}</span>
+            <span className="sidebar__user-role">{user ? user.role : ''}</span>
+          </div>
+        </div>
+        <button className="btn btn--danger btn--sm btn--block" onClick={handleLogout} style={{ marginTop: '10px' }}>
+          Выйти
+        </button>
       </div>
 
     </aside>
-  )
+  );
 }
 
-export default Sidebar
+export default Sidebar;
