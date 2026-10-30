@@ -10,6 +10,7 @@ import Vehicles from './pages/Vehicles.jsx'
 import Pricing from './pages/Pricing.jsx'
 import Users from './pages/Users.jsx'
 import Profile from './pages/Profile.jsx'
+import OrderDetail from './pages/OrderDetail.jsx';
 
 function App() {
   return (
@@ -25,6 +26,12 @@ function App() {
       <Route path="/orders" element={
         <ProtectedRoute>
           <Layout title="Заказы"><Orders /></Layout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/orders/:id" element={
+        <ProtectedRoute>
+          <Layout title="Заказ"><OrderDetail /></Layout>
         </ProtectedRoute>
       } />
 

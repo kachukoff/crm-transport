@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 
 function Orders() {
@@ -94,7 +95,10 @@ function Orders() {
                     {new Date(order.created_at).toLocaleDateString('ru-RU')}
                   </td>
                   <td className="table__cell-actions">
-                    <button className="btn btn--ghost btn--sm">Открыть</button>
+                    <Link 
+                      to={`/orders/${order.id}`} 
+                      className="btn btn--ghost btn--sm"
+                    >Открыть</Link>
                   </td>
                 </tr>
               ))

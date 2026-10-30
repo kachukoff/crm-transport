@@ -39,7 +39,17 @@ async def get_orders(db: AsyncSession = Depends(get_db)):
 
 @router.get("/{order_id}", response_model=OrderResponse)
 async def get_single_order(order_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Order).where(Order.id == order_id))
+    query = (
+        select(Order)
+        .options(
+            selectinload(Order.client),
+            selectinload(Order.route),
+            selectinload(Order.driver),
+            selectinload(Order.vehicle)
+        )
+        .where(Order.id == order_id)
+    )
+    result = await db.execute(query)
     db_order = result.scalar_one_or_none()
     if db_order is None:
         raise HTTPException(status_code=404, detail="Order not found")
