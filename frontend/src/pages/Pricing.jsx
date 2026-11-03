@@ -1,35 +1,53 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
+import Modal from '../components/Modal';
 
 function Pricing() {
-  const [pricing, setPricing] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    api.get('/pricing/')
-      .then(data => {
-        setPricing(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  const [formData, setFormData] = useState({
+    vehicle_type: 'gazelle',
+    base_rate: '',
+    price_per_km: '',
+    price_per_kg: '',
+  });
 
-  if (loading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error}</div>;
+  // Загрузка тарифов
+  const { data: pricing = [], isLoading, error } = useQuery({
+    queryKey: ['pricing'],
+    queryFn: () => api.get('/pricing/'),
+  });
 
-  // Функция для красивого отображения типа машины
-  const getVehicleTypeName = (type) => {
-    switch (type) {
-      case 'gazelle': return 'Газель';
-      case 'medium': return 'Средняя';
-      case 'truck': return 'Фура';
-      case 'refrigerator': return 'Рефрижератор';
-      default: return type;
-    }
+  // Мутация создания тарифа
+  const createPricing = useMutation({
+    mutationFn: (newPricing) => api.post('/pricing/', newPricing),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pricing'] });
+      setIsModalOpen(false);
+      setFormData({ vehicle_type: 'gazelle', base_rate: '', price_per_km: '', price_per_kg: '' });
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    createPricing.mutate({
+      vehicle_type: formData.vehicle_type,
+      base_rate: Number(formData.base_rate),
+      price_per_km: Number(formData.price_per_km),
+      price_per_kg: Number(formData.price_per_kg),
+    });
+  };
+
+  if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error.message}</div>;
+
+  const typeMap = {
+    gazelle: 'Газель',
+    medium: 'Средняя',
+    truck: 'Фура',
+    refrigerator: 'Рефрижератор',
   };
 
   return (
@@ -40,7 +58,9 @@ function Pricing() {
           <p className="page-header__subtitle">Настройка ценообразования по типам транспорта</p>
         </div>
         <div className="page-header__actions">
-          <button className="btn btn--primary">+ Добавить тариф</button>
+          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+            + Добавить тариф
+          </button>
         </div>
       </div>
 
@@ -74,7 +94,7 @@ function Pricing() {
             ) : (
               pricing.map(rule => (
                 <tr key={rule.id}>
-                  <td><strong>{getVehicleTypeName(rule.vehicle_type)}</strong></td>
+                  <td><strong>{typeMap[rule.vehicle_type] || rule.vehicle_type}</strong></td>
                   <td>{rule.base_rate} ₽</td>
                   <td>{rule.price_per_km} ₽</td>
                   <td>{rule.price_per_kg} ₽</td>
@@ -87,6 +107,69 @@ function Pricing() {
           </tbody>
         </table>
       </div>
+
+      {/* Модалка создания тарифа */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Добавить тариф">
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-group__label">Тип транспорта</label>
+            <select 
+              className="select" 
+              value={formData.vehicle_type}
+              onChange={(e) => setFormData({ ...formData, vehicle_type: e.target.value })}
+            >
+              <option value="gazelle">Газель</option>
+              <option value="medium">Средняя</option>
+              <option value="truck">Фура</option>
+              <option value="refrigerator">Рефрижератор</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-group__label">Базовая ставка (₽)</label>
+            <input 
+              className="input" 
+              type="number" 
+              required
+              value={formData.base_rate}
+              onChange={(e) => setFormData({ ...formData, base_rate: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-group__label">Цена за км (₽)</label>
+            <input 
+              className="input" 
+              type="number" 
+              step="0.01"
+              required
+              value={formData.price_per_km}
+              onChange={(e) => setFormData({ ...formData, price_per_km: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-group__label">Цена за кг (₽)</label>
+            <input 
+              className="input" 
+              type="number" 
+              step="0.01"
+              required
+              value={formData.price_per_kg}
+              onChange={(e) => setFormData({ ...formData, price_per_kg: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>
+              Отмена
+            </button>
+            <button type="submit" className="btn btn--primary" disabled={createPricing.isPending}>
+              {createPricing.isPending ? 'Сохранение...' : 'Создать'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 }

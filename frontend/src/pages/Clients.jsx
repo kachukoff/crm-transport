@@ -1,25 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
+import Modal from '../components/Modal';
 
 function Clients() {
-  const [clients, setClients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    api.get('/clients/')
-      .then(data => {
-        setClients(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  const [formData, setFormData] = useState({
+    name: '',
+    type: 'legal',
+    inn: '',
+    contact_person: '',
+    phone: '',
+    email: '',
+  });
 
-  if (loading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error}</div>;
+  // Загрузка клиентов
+  const { data: clients = [], isLoading, error } = useQuery({
+    queryKey: ['clients'],
+    queryFn: () => api.get('/clients/'),
+  });
+
+  // Мутация создания клиента
+  const createClient = useMutation({
+    mutationFn: (newClient) => api.post('/clients/', newClient),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      setIsModalOpen(false);
+      setFormData({ name: '', type: 'legal', inn: '', contact_person: '', phone: '', email: '' });
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Очищаем пустые строки, чтобы в базу уходили null, а не ""
+    const cleanData = Object.fromEntries(
+      Object.entries(formData).filter(([_, value]) => value !== '')
+    );
+    createClient.mutate(cleanData);
+  };
+
+  if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error.message}</div>;
 
   return (
     <>
@@ -29,7 +52,9 @@ function Clients() {
           <p className="page-header__subtitle">Всего: {clients.length} клиентов</p>
         </div>
         <div className="page-header__actions">
-          <button className="btn btn--primary">+ Добавить клиента</button>
+          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+            + Добавить клиента
+          </button>
         </div>
       </div>
 
@@ -80,6 +105,79 @@ function Clients() {
           </tbody>
         </table>
       </div>
+
+      {/* Модалка создания клиента */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Добавить клиента">
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-group__label">Тип клиента</label>
+            <select 
+              className="select" 
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+            >
+              <option value="legal">Юридическое лицо</option>
+              <option value="individual">Физическое лицо</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-group__label">Название / ФИО</label>
+            <input 
+              className="input" 
+              required 
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-group__label">ИНН (опционально)</label>
+            <input 
+              className="input" 
+              value={formData.inn}
+              onChange={(e) => setFormData({ ...formData, inn: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-group__label">Контактное лицо</label>
+            <input 
+              className="input" 
+              value={formData.contact_person}
+              onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-group__label">Телефон</label>
+            <input 
+              className="input" 
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-group__label">Email</label>
+            <input 
+              className="input" 
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>
+              Отмена
+            </button>
+            <button type="submit" className="btn btn--primary" disabled={createClient.isPending}>
+              {createClient.isPending ? 'Сохранение...' : 'Создать'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 }
