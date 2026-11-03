@@ -17,7 +17,21 @@ async def create_order(order: OrderCreate, db: AsyncSession = Depends(get_db)):
     db_order = Order(**order.model_dump())
     db.add(db_order)
     await db.commit()
-    await db.refresh(db_order)
+
+    # Перезапрашиваем заказ с вложенными данными
+    query = (
+        select(Order)
+        .options(
+            selectinload(Order.client),
+            selectinload(Order.route),
+            selectinload(Order.driver),
+            selectinload(Order.vehicle)
+        )
+        .where(Order.id == db_order.id)
+    )
+    result = await db.execute(query)
+    db_order = result.scalar_one()
+
     return db_order
 
 
