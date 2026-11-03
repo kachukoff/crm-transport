@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlalchemy import select
+from pydantic import BaseModel
 from app.database import get_db
 from app.models.order import Order, OrderStatusHistory
 from app.models.driver import Driver
@@ -22,7 +23,6 @@ async def create_order(order: OrderCreate, db: AsyncSession = Depends(get_db)):
 
 @router.get("/", response_model=list[OrderResponse])
 async def get_orders(db: AsyncSession = Depends(get_db)):
-    # selectinload подтягивает связанные таблицы
     query = (
         select(Order)
         .options(
@@ -31,7 +31,7 @@ async def get_orders(db: AsyncSession = Depends(get_db)):
             selectinload(Order.driver),
             selectinload(Order.vehicle)
         )
-        .order_by(Order.id) # Order.id.desc()
+        .order_by(Order.id)
     )
     result = await db.execute(query)
     return result.scalars().all()
@@ -98,5 +98,63 @@ async def update_order_status(order_id: int, data: OrderStatusUpdate, db: AsyncS
             if vehicle: vehicle.status = "available"
 
     await db.commit()
-    await db.refresh(db_order)
+    query = (
+        select(Order)
+        .options(
+            selectinload(Order.client),
+            selectinload(Order.route),
+            selectinload(Order.driver),
+            selectinload(Order.vehicle)
+        )
+        .where(Order.id == order_id)
+    )
+    result = await db.execute(query)
+    db_order = result.scalar_one()
+
+    return db_order
+
+
+# --- СХЕМА ДЛЯ НАЗНАЧЕНИЯ ---
+class OrderAssign(BaseModel):
+    driver_id: int
+    vehicle_id: int
+
+
+@router.patch("/{order_id}/assign", response_model=OrderResponse)
+async def assign_order(order_id: int, data: OrderAssign, db: AsyncSession = Depends(get_db)):
+    # 1. Ищем заказ
+    result = await db.execute(select(Order).where(Order.id == order_id))
+    db_order = result.scalar_one_or_none()
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    # 2. Назначаем водителя и машину
+    db_order.driver_id = data.driver_id
+    db_order.vehicle_id = data.vehicle_id
+    db_order.status = "assigned"
+
+    # 3. Записываем в историю
+    history = OrderStatusHistory(
+        order_id=order_id,
+        status="assigned",
+        comment=f"Назначен водитель ID {data.driver_id} и машина ID {data.vehicle_id}"
+    )
+    db.add(history)
+
+    await db.commit()
+
+    # 4. Подтягиваем заказ с вложенными данными
+    query = (
+        select(Order)
+        .options(
+            selectinload(Order.client),
+            selectinload(Order.route),
+            selectinload(Order.driver),
+            selectinload(Order.vehicle)
+        )
+        .where(Order.id == order_id)
+    )
+    result = await db.execute(query)
+    db_order = result.scalar_one()
+
     return db_order
