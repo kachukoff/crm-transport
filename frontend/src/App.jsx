@@ -11,6 +11,8 @@ import Pricing from './pages/Pricing.jsx'
 import Users from './pages/Users.jsx'
 import Profile from './pages/Profile.jsx'
 import OrderDetail from './pages/OrderDetail.jsx';
+import ClientDetail from './pages/ClientDetail.jsx';
+import DriverDetail from './pages/DriverDetail.jsx';
 
 function App() {
   return (
@@ -41,9 +43,21 @@ function App() {
         </ProtectedRoute>
       } />
 
+      <Route path="/clients/:id" element={
+        <ProtectedRoute>
+          <Layout title="Клиент"><ClientDetail /></Layout>
+        </ProtectedRoute>
+      } />
+
       <Route path="/drivers" element={
         <ProtectedRoute>
           <Layout title="Водители"><Drivers /></Layout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/drivers/:id" element={
+        <ProtectedRoute>
+          <Layout title="Водитель"><DriverDetail /></Layout>
         </ProtectedRoute>
       } />
 

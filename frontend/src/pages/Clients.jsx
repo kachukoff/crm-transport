@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';  // <-- добавили useNavigate
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
 
 function Clients() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();  // <-- добавили
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -16,13 +18,11 @@ function Clients() {
     email: '',
   });
 
-  // Загрузка клиентов
   const { data: clients = [], isLoading, error } = useQuery({
     queryKey: ['clients'],
     queryFn: () => api.get('/clients/'),
   });
 
-  // Мутация создания клиента
   const createClient = useMutation({
     mutationFn: (newClient) => api.post('/clients/', newClient),
     onSuccess: () => {
@@ -34,7 +34,6 @@ function Clients() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Очищаем пустые строки, чтобы в базу уходили null, а не ""
     const cleanData = Object.fromEntries(
       Object.entries(formData).filter(([_, value]) => value !== '')
     );
@@ -86,7 +85,11 @@ function Clients() {
               </tr>
             ) : (
               clients.map(client => (
-                <tr key={client.id}>
+                <tr 
+                  key={client.id}
+                  onClick={() => navigate(`/clients/${client.id}`)}  // <-- клик по строке
+                  style={{ cursor: 'pointer' }}                   // <-- курсор-рука
+                >
                   <td><strong>{client.name}</strong></td>
                   <td>
                     <span className={`badge ${client.type === 'legal' ? 'badge--primary' : 'badge--info'}`}>
@@ -96,8 +99,8 @@ function Clients() {
                   <td className="table__cell-muted">{client.inn || '—'}</td>
                   <td>{client.contact_person || '—'}</td>
                   <td>{client.phone || '—'}</td>
-                  <td className="table__cell-actions">
-                    <button className="btn btn--ghost btn--sm">Открыть</button>
+                  <td className="table__cell-actions" onClick={(e) => e.stopPropagation()}>
+                    <Link to={`/clients/${client.id}`} className="btn btn--ghost btn--sm">Открыть</Link>
                   </td>
                 </tr>
               ))

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
@@ -7,6 +8,7 @@ function Drivers() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ full_name: '', phone: '', license_number: '' });
+  const navigate = useNavigate();
 
   // Загрузка водителей через TanStack Query
   const { data: drivers = [], isLoading, error } = useQuery({
@@ -77,24 +79,29 @@ function Drivers() {
               </tr>
             ) : (
               drivers.map(driver => (
-                <tr key={driver.id}>
+                <tr
+                  key={driver.id}
+                  onClick={() => navigate(`/drivers/${driver.id}`)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <td><strong>{driver.full_name}</strong></td>
                   <td>{driver.phone || '—'}</td>
                   <td className="table__cell-muted">{driver.license_number || '—'}</td>
                   <td>
-                    <span className={`badge ${
-                      driver.status === 'available' ? 'badge--success' :
+                    <span className={`badge ${driver.status === 'available' ? 'badge--success' :
                       driver.status === 'on_route' ? 'badge--warning' :
-                      driver.status === 'day_off' ? 'badge--neutral' : 'badge--danger'
-                    }`}>
+                        driver.status === 'day_off' ? 'badge--neutral' : 'badge--danger'
+                      }`}>
                       {driver.status === 'available' ? 'Свободен' :
-                       driver.status === 'on_route' ? 'В рейсе' :
-                       driver.status === 'day_off' ? 'Выходной' : 'Уволен'}
+                        driver.status === 'on_route' ? 'В рейсе' :
+                          driver.status === 'day_off' ? 'Выходной' : 'Уволен'}
                     </span>
                   </td>
                   <td className="table__cell-muted">{driver.vehicle_plate || '—'}</td>
-                  <td className="table__cell-actions">
-                    <button className="btn btn--ghost btn--sm">Открыть</button>
+                  <td className="table__cell-actions" onClick={(e) => e.stopPropagation()}>
+                    <Link to={`/drivers/${driver.id}`} className="btn btn--ghost btn--sm">
+                      Открыть
+                    </Link>
                   </td>
                 </tr>
               ))

@@ -6,6 +6,8 @@ from app.models.driver import Driver
 from app.models.order import Order
 from app.models.vehicle import Vehicle
 from app.schemas.driver import DriverCreate, DriverResponse
+from pydantic import BaseModel
+from typing import Optional
 
 router = APIRouter(prefix="/drivers", tags=["drivers"])
 
@@ -57,4 +59,25 @@ async def get_driver(driver_id: int, db: AsyncSession = Depends(get_db)):
     db_driver = result.scalar_one_or_none()
     if db_driver is None:
         raise HTTPException(status_code=404, detail="Driver not found")
+    return db_driver
+
+class DriverUpdate(BaseModel):
+    full_name: Optional[str] = None
+    phone: Optional[str] = None
+    license_number: Optional[str] = None
+    status: Optional[str] = None
+
+
+@router.patch("/{driver_id}", response_model=DriverResponse)
+async def update_driver(driver_id: int, data: DriverUpdate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Driver).where(Driver.id == driver_id))
+    db_driver = result.scalar_one_or_none()
+    if db_driver is None:
+        raise HTTPException(status_code=404, detail="Driver not found")
+
+    for key, value in data.model_dump(exclude_unset=True).items():
+        setattr(db_driver, key, value)
+
+    await db.commit()
+    await db.refresh(db_driver)
     return db_driver
