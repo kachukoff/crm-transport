@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
@@ -6,7 +7,7 @@ import Modal from '../components/Modal';
 function Vehicles() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     plate_number: '',
     brand: '',
@@ -97,22 +98,25 @@ function Vehicles() {
               </tr>
             ) : (
               vehicles.map(vehicle => (
-                <tr key={vehicle.id}>
+                <tr
+                  key={vehicle.id}
+                  onClick={() => navigate(`/vehicles/${vehicle.id}`)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <td><strong>{vehicle.plate_number}</strong></td>
                   <td>{vehicle.brand} {vehicle.model}</td>
                   <td className="table__cell-muted">{typeMap[vehicle.vehicle_type] || vehicle.vehicle_type}</td>
                   <td>{vehicle.capacity_kg ? `${vehicle.capacity_kg} кг` : '—'}</td>
                   <td>
-                    <span className={`badge ${
-                      vehicle.status === 'available' ? 'badge--success' :
+                    <span className={`badge ${vehicle.status === 'available' ? 'badge--success' :
                       vehicle.status === 'on_route' ? 'badge--warning' : 'badge--danger'
-                    }`}>
+                      }`}>
                       {vehicle.status === 'available' ? 'Свободна' :
-                       vehicle.status === 'on_route' ? 'В рейсе' : 'На ремонте'}
+                        vehicle.status === 'on_route' ? 'В рейсе' : 'На ремонте'}
                     </span>
                   </td>
-                  <td className="table__cell-actions">
-                    <button className="btn btn--ghost btn--sm">Открыть</button>
+                  <td className="table__cell-actions" onClick={(e) => e.stopPropagation()}>
+                    <Link to={`/vehicles/${vehicle.id}`} className="btn btn--ghost btn--sm">Открыть</Link>
                   </td>
                 </tr>
               ))
@@ -126,9 +130,9 @@ function Vehicles() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-group__label">Госномер</label>
-            <input 
-              className="input" 
-              required 
+            <input
+              className="input"
+              required
               placeholder="А123ВС 77"
               value={formData.plate_number}
               onChange={(e) => setFormData({ ...formData, plate_number: e.target.value })}
@@ -137,8 +141,8 @@ function Vehicles() {
 
           <div className="form-group">
             <label className="form-group__label">Марка</label>
-            <input 
-              className="input" 
+            <input
+              className="input"
               placeholder="ГАЗ"
               value={formData.brand}
               onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
@@ -147,8 +151,8 @@ function Vehicles() {
 
           <div className="form-group">
             <label className="form-group__label">Модель</label>
-            <input 
-              className="input" 
+            <input
+              className="input"
               placeholder="Газель Next"
               value={formData.model}
               onChange={(e) => setFormData({ ...formData, model: e.target.value })}
@@ -157,8 +161,8 @@ function Vehicles() {
 
           <div className="form-group">
             <label className="form-group__label">Тип машины</label>
-            <select 
-              className="select" 
+            <select
+              className="select"
               value={formData.vehicle_type}
               onChange={(e) => setFormData({ ...formData, vehicle_type: e.target.value })}
             >
@@ -171,8 +175,8 @@ function Vehicles() {
 
           <div className="form-group">
             <label className="form-group__label">Грузоподъёмность (кг)</label>
-            <input 
-              className="input" 
+            <input
+              className="input"
               type="number"
               placeholder="1500"
               value={formData.capacity_kg}

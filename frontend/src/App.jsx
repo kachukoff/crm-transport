@@ -13,6 +13,7 @@ import Profile from './pages/Profile.jsx'
 import OrderDetail from './pages/OrderDetail.jsx';
 import ClientDetail from './pages/ClientDetail.jsx';
 import DriverDetail from './pages/DriverDetail.jsx';
+import VehicleDetail from './pages/VehicleDetail.jsx';
 
 function App() {
   return (
@@ -67,6 +68,12 @@ function App() {
         </ProtectedRoute>
       } />
 
+      <Route path="/vehicles/:id" element={
+        <ProtectedRoute>
+          <Layout title="Машина"><VehicleDetail /></Layout>
+        </ProtectedRoute>
+      } />
+
       <Route path="/pricing" element={
         <ProtectedRoute>
           <Layout title="Тарифы"><Pricing /></Layout>
@@ -88,4 +95,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
