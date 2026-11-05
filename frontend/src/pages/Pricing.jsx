@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Pricing() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     vehicle_type: 'gazelle',
@@ -93,13 +95,17 @@ function Pricing() {
               </tr>
             ) : (
               pricing.map(rule => (
-                <tr key={rule.id}>
+                <tr
+                  key={rule.id}
+                  onClick={() => navigate(`/pricing/${rule.id}`)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <td><strong>{typeMap[rule.vehicle_type] || rule.vehicle_type}</strong></td>
                   <td>{rule.base_rate} ₽</td>
                   <td>{rule.price_per_km} ₽</td>
                   <td>{rule.price_per_kg} ₽</td>
-                  <td className="table__cell-actions">
-                    <button className="btn btn--ghost btn--sm">Редактировать</button>
+                  <td className="table__cell-actions" onClick={(e) => e.stopPropagation()}>
+                    <Link to={`/pricing/${rule.id}`} className="btn btn--ghost btn--sm">Редактировать</Link>
                   </td>
                 </tr>
               ))
@@ -113,8 +119,8 @@ function Pricing() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-group__label">Тип транспорта</label>
-            <select 
-              className="select" 
+            <select
+              className="select"
               value={formData.vehicle_type}
               onChange={(e) => setFormData({ ...formData, vehicle_type: e.target.value })}
             >
@@ -127,9 +133,9 @@ function Pricing() {
 
           <div className="form-group">
             <label className="form-group__label">Базовая ставка (₽)</label>
-            <input 
-              className="input" 
-              type="number" 
+            <input
+              className="input"
+              type="number"
               required
               value={formData.base_rate}
               onChange={(e) => setFormData({ ...formData, base_rate: e.target.value })}
@@ -138,9 +144,9 @@ function Pricing() {
 
           <div className="form-group">
             <label className="form-group__label">Цена за км (₽)</label>
-            <input 
-              className="input" 
-              type="number" 
+            <input
+              className="input"
+              type="number"
               step="0.01"
               required
               value={formData.price_per_km}
@@ -150,9 +156,9 @@ function Pricing() {
 
           <div className="form-group">
             <label className="form-group__label">Цена за кг (₽)</label>
-            <input 
-              className="input" 
-              type="number" 
+            <input
+              className="input"
+              type="number"
               step="0.01"
               required
               value={formData.price_per_kg}

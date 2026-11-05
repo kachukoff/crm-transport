@@ -14,6 +14,7 @@ import OrderDetail from './pages/OrderDetail.jsx';
 import ClientDetail from './pages/ClientDetail.jsx';
 import DriverDetail from './pages/DriverDetail.jsx';
 import VehicleDetail from './pages/VehicleDetail.jsx';
+import PricingDetail from './pages/PricingDetail.jsx';
 
 function App() {
   return (
@@ -77,6 +78,12 @@ function App() {
       <Route path="/pricing" element={
         <ProtectedRoute>
           <Layout title="Тарифы"><Pricing /></Layout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/pricing/:id" element={
+        <ProtectedRoute>
+          <Layout title="Тариф"><PricingDetail /></Layout>
         </ProtectedRoute>
       } />
 
