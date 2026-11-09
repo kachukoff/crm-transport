@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app.database import get_db
 from app.models.client import Client
+from app.models.order import Order
 from app.schemas.client import ClientCreate, ClientResponse
 from pydantic import BaseModel
 from typing import Optional
@@ -26,7 +27,6 @@ async def get_clients(db: AsyncSession = Depends(get_db)):  # <-- переиме
 
 
 @router.get("/{client_id}", response_model=ClientResponse)
-# <-- переименовали для ясности
 async def get_single_client(client_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Client).where(Client.id == client_id))
     db_client = result.scalar_one_or_none()
@@ -59,3 +59,27 @@ async def update_client(client_id: int, data: ClientUpdate, db: AsyncSession = D
     await db.commit()
     await db.refresh(db_client)
     return db_client
+
+
+@router.delete("/{client_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_client(client_id: int, db: AsyncSession = Depends(get_db)):
+    # 1. Проверяем, есть ли у клиента заказы
+    result = await db.execute(select(func.count(Order.id)).where(Order.client_id == client_id))
+    orders_count = result.scalar()
+
+    if orders_count > 0:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Нельзя удалить клиента, у него есть {orders_count} заказ(ов)"
+        )
+
+    # 2. Ищем клиента
+    result = await db.execute(select(Client).where(Client.id == client_id))
+    db_client = result.scalar_one_or_none()
+    if db_client is None:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    # 3. Удаляем
+    await db.delete(db_client)
+    await db.commit()
+    return None

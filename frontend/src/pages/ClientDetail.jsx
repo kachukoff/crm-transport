@@ -49,12 +49,29 @@ function ClientDetail() {
     },
   });
 
+  const deleteClient = useMutation({
+    mutationFn: () => api.delete(`/clients/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      navigate('/clients');
+    },
+    onError: (error) => {
+      alert(`Ошибка при удалении: ${error.message}`);
+    },
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const cleanData = Object.fromEntries(
       Object.entries(formData).filter(([_, value]) => value !== '')
     );
     updateClient.mutate(cleanData);
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('Вы уверены, что хотите удалить этого клиента?')) {
+      deleteClient.mutate();
+    }
   };
 
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
@@ -73,9 +90,12 @@ function ClientDetail() {
             {client.type === 'legal' ? 'Юридическое лицо' : 'Физическое лицо'}
           </p>
         </div>
-        <div className="page-header__actions">
+        <div className="page-header__actions" style={{ display: 'flex', gap: '10px' }}>
           <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
             Редактировать
+          </button>
+          <button className="btn btn--danger" onClick={handleDelete}>
+            Удалить
           </button>
         </div>
       </div>
@@ -110,8 +130,8 @@ function ClientDetail() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-group__label">Тип клиента</label>
-            <select 
-              className="select" 
+            <select
+              className="select"
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
             >
@@ -122,9 +142,9 @@ function ClientDetail() {
 
           <div className="form-group">
             <label className="form-group__label">Название / ФИО</label>
-            <input 
-              className="input" 
-              required 
+            <input
+              className="input"
+              required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
@@ -132,8 +152,8 @@ function ClientDetail() {
 
           <div className="form-group">
             <label className="form-group__label">ИНН</label>
-            <input 
-              className="input" 
+            <input
+              className="input"
               value={formData.inn}
               onChange={(e) => setFormData({ ...formData, inn: e.target.value })}
             />
@@ -141,8 +161,8 @@ function ClientDetail() {
 
           <div className="form-group">
             <label className="form-group__label">Контактное лицо</label>
-            <input 
-              className="input" 
+            <input
+              className="input"
               value={formData.contact_person}
               onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
             />
@@ -150,8 +170,8 @@ function ClientDetail() {
 
           <div className="form-group">
             <label className="form-group__label">Телефон</label>
-            <input 
-              className="input" 
+            <input
+              className="input"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             />
@@ -159,8 +179,8 @@ function ClientDetail() {
 
           <div className="form-group">
             <label className="form-group__label">Email</label>
-            <input 
-              className="input" 
+            <input
+              className="input"
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -169,8 +189,8 @@ function ClientDetail() {
 
           <div className="form-group">
             <label className="form-group__label">Адрес</label>
-            <input 
-              className="input" 
+            <input
+              className="input"
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
             />

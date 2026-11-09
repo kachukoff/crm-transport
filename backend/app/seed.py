@@ -222,7 +222,7 @@ async def seed_data():
         # 7. ПОЛЬЗОВАТЕЛИ
         # ==========================================
         users_data = [
-            {"email": "admin@crm.ru", "password_hash": hash_password("admin123"), "full_name": "Соколов Игорь Петрович", "role": "admin"},
+            {"email": "admin@crm.ru", "password_hash": hash_password("admin123"), "full_name": "Качуков Александр Викторович", "role": "admin"},
             {"email": "manager@crm.ru", "password_hash": hash_password("manager123"), "full_name": "Морозова Анна Сергеевна", "role": "manager"},
             {"email": "driver@crm.ru", "password_hash": hash_password("driver123"), "full_name": "Иванов Иван Иванович", "role": "driver"},
         ]
@@ -233,4 +233,4 @@ async def seed_data():
         print("База успешно заполнена!")
 
 if __name__ == "__main__":
-    asyncio.run(seed_data())
+    asyncio.run(seed_data());
