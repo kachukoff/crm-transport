@@ -1,7 +1,6 @@
 const BASE_URL = '/api';
 
 export const api = {
-  // Универсальный метод для GET-запросов
   get: async (endpoint) => {
     const response = await fetch(`${BASE_URL}${endpoint}`);
     if (!response.ok) {
@@ -10,7 +9,6 @@ export const api = {
     return response.json();
   },
 
-  // Универсальный метод POST-запросов
   post: async (endpoint, data) => {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: 'POST',
@@ -23,7 +21,6 @@ export const api = {
     return response.json();
   },
 
-  // Универсальный метод для PATCH-запросов
   patch: async (endpoint, data) => {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: 'PATCH',
@@ -34,5 +31,13 @@ export const api = {
       throw new Error(`Ошибка API: ${response.status}`);
     }
     return response.json();
-  }
+  },
+
+  delete: async (endpoint) => {
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
+    return response.status === 204 ? null : response.json();
+  },
 }

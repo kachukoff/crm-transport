@@ -54,3 +54,15 @@ async def update_pricing(pricing_id: int, data: PricingUpdate, db: AsyncSession 
     await db.commit()
     await db.refresh(db_pricing)
     return db_pricing
+
+
+@router.delete("/{pricing_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_pricing(pricing_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(PricingRule).where(PricingRule.id == pricing_id))
+    db_pricing = result.scalar_one_or_none()
+    if db_pricing is None:
+        raise HTTPException(status_code=404, detail="Pricing rule not found")
+
+    await db.delete(db_pricing)
+    await db.commit()
+    return None

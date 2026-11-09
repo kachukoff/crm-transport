@@ -9,6 +9,13 @@ function PricingDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const deletePricing = useMutation({
+    mutationFn: () => api.delete(`/pricing/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pricing'] });
+      navigate('/pricing');
+    },
+  });
 
   const { data: pricing, isLoading, error } = useQuery({
     queryKey: ['pricing', id],
@@ -53,6 +60,12 @@ function PricingDetail() {
     updatePricing.mutate(cleanData);
   };
 
+  const handleDelete = () => {
+    if (window.confirm('Вы уверены, что хотите удалить этот тариф?')) {
+      deletePricing.mutate();
+    }
+  };
+
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
   if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error.message}</div>;
   if (!pricing) return <div style={{ padding: '20px' }}>Тариф не найден</div>;
@@ -74,9 +87,12 @@ function PricingDetail() {
           <h2 className="page-header__title">{typeMap[pricing.vehicle_type] || pricing.vehicle_type}</h2>
           <p className="page-header__subtitle">Настройка ценообразования</p>
         </div>
-        <div className="page-header__actions">
+        <div className="page-header__actions" style={{ display: 'flex', gap: '10px' }}>
           <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
             Редактировать
+          </button>
+          <button className="btn btn--danger" onClick={handleDelete}>
+            Удалить
           </button>
         </div>
       </div>
