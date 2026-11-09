@@ -1,25 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '../api/client';
 
 function Users() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    api.get('/users/')
-      .then(data => {
-        setUsers(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  // Загрузка пользователей
+  const { data: users = [], isLoading, error } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => api.get('/users/'),
+  });
 
-  if (loading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error}</div>;
+  if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error.message}</div>;
+
+  const roleMap = {
+    admin: 'Администратор',
+    manager: 'Менеджер',
+    driver: 'Водитель',
+  };
 
   return (
     <>
@@ -29,6 +28,7 @@ function Users() {
           <p className="page-header__subtitle">Сотрудники системы с доступом к CRM</p>
         </div>
         <div className="page-header__actions">
+          {/* Кнопка создания пока не реализована, оставляем как заглушку */}
           <button className="btn btn--primary">+ Добавить пользователя</button>
         </div>
       </div>
@@ -61,7 +61,11 @@ function Users() {
               </tr>
             ) : (
               users.map(user => (
-                <tr key={user.id}>
+                <tr
+                  key={user.id}
+                  onClick={() => navigate(`/users/${user.id}`)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <td><strong>{user.full_name}</strong></td>
                   <td>{user.email}</td>
                   <td>
@@ -69,8 +73,7 @@ function Users() {
                       user.role === 'admin' ? 'badge--danger' :
                       user.role === 'manager' ? 'badge--primary' : 'badge--info'
                     }`}>
-                      {user.role === 'admin' ? 'Администратор' :
-                       user.role === 'manager' ? 'Менеджер' : 'Водитель'}
+                      {roleMap[user.role] || user.role}
                     </span>
                   </td>
                   <td>
@@ -78,8 +81,8 @@ function Users() {
                       {user.is_active ? 'Активен' : 'Заблокирован'}
                     </span>
                   </td>
-                  <td className="table__cell-actions">
-                    <button className="btn btn--ghost btn--sm">Открыть</button>
+                  <td className="table__cell-actions" onClick={(e) => e.stopPropagation()}>
+                    <Link to={`/users/${user.id}`} className="btn btn--ghost btn--sm">Открыть</Link>
                   </td>
                 </tr>
               ))

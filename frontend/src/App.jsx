@@ -15,6 +15,7 @@ import ClientDetail from './pages/ClientDetail.jsx';
 import DriverDetail from './pages/DriverDetail.jsx';
 import VehicleDetail from './pages/VehicleDetail.jsx';
 import PricingDetail from './pages/PricingDetail.jsx';
+import UserDetail from './pages/UserDetail.jsx';
 
 function App() {
   return (
@@ -90,6 +91,12 @@ function App() {
       <Route path="/users" element={
         <ProtectedRoute>
           <Layout title="Пользователи"><Users /></Layout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/users/:id" element={
+        <ProtectedRoute>
+          <Layout title="Пользователь"><UserDetail /></Layout>
         </ProtectedRoute>
       } />
 
