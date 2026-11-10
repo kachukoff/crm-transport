@@ -8,6 +8,7 @@ from app.models.order import Order, OrderStatusHistory
 from app.models.driver import Driver
 from app.models.vehicle import Vehicle
 from app.schemas.order import OrderCreate, OrderResponse, OrderStatusUpdate
+from sqlalchemy import delete as sql_delete
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
@@ -172,3 +173,20 @@ async def assign_order(order_id: int, data: OrderAssign, db: AsyncSession = Depe
     db_order = result.scalar_one()
 
     return db_order
+
+
+@router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_order(order_id: int, db: AsyncSession = Depends(get_db)):
+    # 1. Ищем заказ
+    result = await db.execute(select(Order).where(Order.id == order_id))
+    db_order = result.scalar_one_or_none()
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Заказ не найден!")
+
+    # 2. Удаляем историю статусов
+    await db.execute(sql_delete(OrderStatusHistory).where(OrderStatusHistory.order_id == order_id))
+
+    # 3. Удаляем сам заказ
+    await db.delete(db_order)
+    await db.commit()
+    return None

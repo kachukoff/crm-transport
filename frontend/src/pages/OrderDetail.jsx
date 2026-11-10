@@ -56,6 +56,17 @@ function OrderDetail() {
     },
   });
 
+  const deleteOrder = useMutation({
+    mutationFn: () => api.delete(`/orders/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      navigate('/orders');
+    },
+    onError: (error) => {
+      alert(`Ошибка при удалении: ${error.message}`);
+    },
+  });
+
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
   if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error.message}</div>;
   if (!order) return <div style={{ padding: '20px' }}>Заказ не найден</div>;
@@ -90,6 +101,12 @@ function OrderDetail() {
     });
   };
 
+  const handleDelete = () => {
+    if (window.confirm('Вы уверены, что хотите удалить этот заказ?')) {
+      deleteOrder.mutate();
+    }
+  };
+
   // Фильтруем только свободных водителей и машины
   const availableDrivers = drivers.filter(d => d.status === 'available' || d.id === order.driver_id);
   const availableVehicles = vehicles.filter(v => v.status === 'available' || v.id === order.vehicle_id);
@@ -113,10 +130,10 @@ function OrderDetail() {
           <div className="card__header">
             <h3 className="card__title">Информация о заказе</h3>
             <span className={`badge ${order.status === 'new' ? 'badge--neutral' :
-                order.status === 'assigned' ? 'badge--info' :
-                  order.status === 'in_progress' ? 'badge--warning' :
-                    order.status === 'delivered' ? 'badge--success' :
-                      order.status === 'completed' ? 'badge--primary' : 'badge--danger'
+              order.status === 'assigned' ? 'badge--info' :
+                order.status === 'in_progress' ? 'badge--warning' :
+                  order.status === 'delivered' ? 'badge--success' :
+                    order.status === 'completed' ? 'badge--primary' : 'badge--danger'
               }`}>
               {statusMap[order.status]}
             </span>
@@ -209,6 +226,14 @@ function OrderDetail() {
               disabled={updateStatus.isPending || order.status === 'cancelled' || order.status === 'completed'}
             >
               Отменить заказ
+            </button>
+            <button
+              className="btn btn--danger btn--block"
+              onClick={handleDelete}
+              disabled={deleteOrder.isPending}
+              style={{ marginTop: '10px' }}
+            >
+              {deleteOrder.isPending ? 'Удаление...' : 'Удалить заказ'}
             </button>
           </div>
         </div>
