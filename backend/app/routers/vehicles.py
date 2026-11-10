@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app.database import get_db
 from app.models.vehicle import Vehicle
+from app.models.order import Order
 from app.schemas.vehicle import VehicleCreate, VehicleResponse
 from pydantic import BaseModel
 from typing import Optional
@@ -56,3 +57,27 @@ async def update_vehicle(vehicle_id: int, data: VehicleUpdate, db: AsyncSession 
     await db.commit()
     await db.refresh(db_vehicle)
     return db_vehicle
+
+
+@router.delete("/{vehicle_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_vehicle(vehicle_id: int, db: AsyncSession = Depends(get_db)):
+    # 1. Проверяем, есть ли у машины заказы
+    result = await db.execute(select(func.count(Order.id)).where(Order.vehicle_id == vehicle_id))
+    orders_count = result.scalar()
+
+    if orders_count > 0:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Нельзя удалить машину, у неё есть {orders_count} заказ(ов)"
+        )
+
+    # 2. Ищем машину
+    result = await db.execute(select(Vehicle).where(Vehicle.id == vehicle_id))
+    db_vehicle = result.scalar_one_or_none()
+    if db_vehicle is None:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+
+    # 3. Удаляем
+    await db.delete(db_vehicle)
+    await db.commit()
+    return None

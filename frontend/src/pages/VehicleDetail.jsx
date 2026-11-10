@@ -47,6 +47,17 @@ function VehicleDetail() {
     },
   });
 
+  const deleteVehicle = useMutation({
+    mutationFn: () => api.delete(`/vehicles/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] });
+      navigate('/vehicles');
+    },
+    onError: (error) => {
+      alert(`Ошибка при удалении: ${error.message}`);
+    },
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const cleanData = Object.fromEntries(
@@ -56,6 +67,12 @@ function VehicleDetail() {
       cleanData.capacity_kg = Number(cleanData.capacity_kg);
     }
     updateVehicle.mutate(cleanData);
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('Вы уверены, что хотите удалить эту машину?')) {
+      deleteVehicle.mutate();
+    }
   };
 
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
@@ -85,9 +102,12 @@ function VehicleDetail() {
           <h2 className="page-header__title">{vehicle.plate_number}</h2>
           <p className="page-header__subtitle">{vehicle.brand} {vehicle.model}</p>
         </div>
-        <div className="page-header__actions">
+        <div className="page-header__actions" style={{ display: 'flex', gap: '10px' }}>
           <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
             Редактировать
+          </button>
+          <button className="btn btn--danger" onClick={handleDelete}>
+            Удалить
           </button>
         </div>
       </div>
@@ -106,7 +126,7 @@ function VehicleDetail() {
             <div className="profile__label">Статус</div>
             <div className="profile__value">
               <span className={`badge ${vehicle.status === 'available' ? 'badge--success' :
-                  vehicle.status === 'on_route' ? 'badge--warning' : 'badge--danger'
+                vehicle.status === 'on_route' ? 'badge--warning' : 'badge--danger'
                 }`}>
                 {statusMap[vehicle.status] || vehicle.status}
               </span>
