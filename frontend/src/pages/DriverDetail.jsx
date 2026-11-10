@@ -42,12 +42,29 @@ function DriverDetail() {
     },
   });
 
+  const deleteDriver = useMutation({
+    mutationFn: () => api.delete(`/drivers/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      navigate('/drivers');
+    },
+    onError: (error) => {
+      alert(`Ошибка при удалении: ${error.message}`);
+    },
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const cleanData = Object.fromEntries(
       Object.entries(formData).filter(([_, value]) => value !== '')
     );
     updateDriver.mutate(cleanData);
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('Вы уверены, что хотите удалить этого водителя?')) {
+      deleteDriver.mutate();
+    }
   };
 
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
@@ -71,9 +88,12 @@ function DriverDetail() {
           <h2 className="page-header__title">{driver.full_name}</h2>
           <p className="page-header__subtitle">{driver.phone || 'Телефон не указан'}</p>
         </div>
-        <div className="page-header__actions">
+        <div className="page-header__actions" style={{ display: 'flex', gap: '10px' }}>
           <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
             Редактировать
+          </button>
+          <button className="btn btn--danger" onClick={handleDelete}>
+            Удалить
           </button>
         </div>
       </div>
@@ -87,11 +107,10 @@ function DriverDetail() {
           <div className="profile__row">
             <div className="profile__label">Статус</div>
             <div className="profile__value">
-              <span className={`badge ${
-                driver.status === 'available' ? 'badge--success' :
+              <span className={`badge ${driver.status === 'available' ? 'badge--success' :
                 driver.status === 'on_route' ? 'badge--warning' :
-                driver.status === 'day_off' ? 'badge--neutral' : 'badge--danger'
-              }`}>
+                  driver.status === 'day_off' ? 'badge--neutral' : 'badge--danger'
+                }`}>
                 {statusMap[driver.status] || driver.status}
               </span>
             </div>
