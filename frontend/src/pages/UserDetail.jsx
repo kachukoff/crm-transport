@@ -40,6 +40,23 @@ function UserDetail() {
     },
   });
 
+  const deleteUser = useMutation({
+    mutationFn: () => api.delete(`/users/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      navigate('/users');
+    },
+    onError: (error) => {
+      alert(`Ошибка при удалении: ${error.message}`);
+    },
+  });
+
+  const handleDelete = () => {
+    if (window.confirm('Вы уверены, что хотите удалить этого пользователя?')) {
+      deleteUser.mutate();
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     updateUser.mutate(formData);
@@ -65,9 +82,12 @@ function UserDetail() {
           <h2 className="page-header__title">{user.full_name}</h2>
           <p className="page-header__subtitle">{user.email}</p>
         </div>
-        <div className="page-header__actions">
+        <div className="page-header__actions" style={{ display: 'flex', gap: '10px' }}>
           <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
             Редактировать
+          </button>
+          <button className="btn btn--danger" onClick={handleDelete}>
+            Удалить
           </button>
         </div>
       </div>
@@ -77,10 +97,9 @@ function UserDetail() {
           <div className="profile__row">
             <div className="profile__label">Роль</div>
             <div className="profile__value">
-              <span className={`badge ${
-                user.role === 'admin' ? 'badge--danger' :
-                user.role === 'manager' ? 'badge--primary' : 'badge--info'
-              }`}>
+              <span className={`badge ${user.role === 'admin' ? 'badge--danger' :
+                  user.role === 'manager' ? 'badge--primary' : 'badge--info'
+                }`}>
                 {roleMap[user.role] || user.role}
               </span>
             </div>
@@ -118,8 +137,8 @@ function UserDetail() {
           </div>
           <div className="form-group">
             <label className="checkbox">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 checked={formData.is_active}
                 onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
               />

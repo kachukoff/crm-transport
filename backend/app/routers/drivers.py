@@ -8,11 +8,13 @@ from app.models.vehicle import Vehicle
 from app.schemas.driver import DriverCreate, DriverResponse
 from pydantic import BaseModel
 from typing import Optional
+from app.dependencies import require_staff
 
 router = APIRouter(prefix="/drivers", tags=["drivers"])
 
 
-@router.post("/", response_model=DriverResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=DriverResponse, status_code=status.HTTP_201_CREATED,
+             dependencies=[Depends(require_staff)])
 async def create_driver(driver: DriverCreate, db: AsyncSession = Depends(get_db)):
     db_driver = Driver(**driver.model_dump())
     db.add(db_driver)
@@ -69,7 +71,8 @@ class DriverUpdate(BaseModel):
     status: Optional[str] = None
 
 
-@router.patch("/{driver_id}", response_model=DriverResponse)
+@router.patch("/{driver_id}", response_model=DriverResponse,
+              dependencies=[Depends(require_staff)])
 async def update_driver(driver_id: int, data: DriverUpdate, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Driver).where(Driver.id == driver_id))
     db_driver = result.scalar_one_or_none()
@@ -84,7 +87,8 @@ async def update_driver(driver_id: int, data: DriverUpdate, db: AsyncSession = D
     return db_driver
 
 
-@router.delete("/{driver_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{driver_id}", status_code=status.HTTP_204_NO_CONTENT,
+               dependencies=[Depends(require_staff)])
 async def delete_driver(driver_id: int, db: AsyncSession = Depends(get_db)):
     # 1. Проверяем, есть ли у водителя заказы
     result = await db.execute(select(func.count(Order.id)).where(Order.driver_id == driver_id))

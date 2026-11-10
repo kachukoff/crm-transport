@@ -1,15 +1,42 @@
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
+import Modal from '../components/Modal';
 
 function Users() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Загрузка пользователей
+  const [formData, setFormData] = useState({
+    email: '',
+    full_name: '',
+    password: '',
+    role: 'manager',
+  });
+
   const { data: users = [], isLoading, error } = useQuery({
     queryKey: ['users'],
     queryFn: () => api.get('/users/'),
   });
+
+  const createUser = useMutation({
+    mutationFn: (newUser) => api.post('/users/', newUser),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setIsModalOpen(false);
+      setFormData({ email: '', full_name: '', password: '', role: 'manager' });
+    },
+    onError: (error) => {
+      alert(`Ошибка при создании: ${error.message}`);
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    createUser.mutate(formData);
+  };
 
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
   if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error.message}</div>;
@@ -28,8 +55,9 @@ function Users() {
           <p className="page-header__subtitle">Сотрудники системы с доступом к CRM</p>
         </div>
         <div className="page-header__actions">
-          {/* Кнопка создания пока не реализована, оставляем как заглушку */}
-          <button className="btn btn--primary">+ Добавить пользователя</button>
+          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+            + Добавить пользователя
+          </button>
         </div>
       </div>
 
@@ -90,6 +118,42 @@ function Users() {
           </tbody>
         </table>
       </div>
+
+      {/* Модалка создания пользователя */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Добавить пользователя">
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-group__label">ФИО</label>
+            <input className="input" required value={formData.full_name}
+              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })} />
+          </div>
+          <div className="form-group">
+            <label className="form-group__label">Email</label>
+            <input className="input" type="email" required value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+          </div>
+          <div className="form-group">
+            <label className="form-group__label">Пароль</label>
+            <input className="input" type="password" required value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+          </div>
+          <div className="form-group">
+            <label className="form-group__label">Роль</label>
+            <select className="select" value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value })}>
+              <option value="manager">Менеджер</option>
+              <option value="admin">Администратор</option>
+              <option value="driver">Водитель</option>
+            </select>
+          </div>
+          <div className="form-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>Отмена</button>
+            <button type="submit" className="btn btn--primary" disabled={createUser.isPending}>
+              {createUser.isPending ? 'Сохранение...' : 'Создать'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 }

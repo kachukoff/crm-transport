@@ -222,9 +222,30 @@ async def seed_data():
         # 7. ПОЛЬЗОВАТЕЛИ
         # ==========================================
         users_data = [
-            {"email": "admin@crm.ru", "password_hash": hash_password("admin123"), "full_name": "Качуков Александр Викторович", "role": "admin"},
-            {"email": "manager@crm.ru", "password_hash": hash_password("manager123"), "full_name": "Морозова Анна Сергеевна", "role": "manager"},
-            {"email": "driver@crm.ru", "password_hash": hash_password("driver123"), "full_name": "Иванов Иван Иванович", "role": "driver"},
+            {"email": "admin@crm.ru", "password_hash": hash_password(
+                "admin123"), "full_name": "Качуков Александр Викторович", "role": "admin", "is_active": True},
+            {"email": "manager@crm.ru", "password_hash": hash_password(
+                "manager123"), "full_name": "Морозова Анна Сергеевна", "role": "manager", "is_active": True},
+            {"email": "driver@crm.ru", "password_hash": hash_password(
+                "driver123"), "full_name": "Иванов Иван Иванович", "role": "driver", "is_active": True},
+            {"email": "e.smirnova@crm.ru", "password_hash": hash_password(
+                "manager123"), "full_name": "Смирнова Елена Викторовна", "role": "manager", "is_active": True},
+            {"email": "a.kuznetsov@crm.ru", "password_hash": hash_password(
+                "manager123"), "full_name": "Кузнецов Алексей Дмитриевич", "role": "manager", "is_active": True},
+            {"email": "d.smirnov@crm.ru", "password_hash": hash_password(
+                "driver123"), "full_name": "Смирнов Дмитрий Олегович", "role": "driver", "is_active": False},  # Заблокирован
+            {"email": "s.sidorov@crm.ru", "password_hash": hash_password(
+                "driver123"), "full_name": "Сидоров Сергей Сергеевич", "role": "driver", "is_active": True},
+            {"email": "a.volkov@crm.ru", "password_hash": hash_password(
+                "driver123"), "full_name": "Волков Андрей Сергеевич", "role": "driver", "is_active": True},
+            {"email": "i.kozlov@crm.ru", "password_hash": hash_password(
+                "driver123"), "full_name": "Козлов Илья Викторович", "role": "driver", "is_active": False},  # Заблокирован
+            {"email": "o.nikitin@crm.ru", "password_hash": hash_password(
+                "driver123"), "full_name": "Никитин Олег Павлович", "role": "driver", "is_active": False},  # Заблокирован
+            {"email": "e.pavlov@crm.ru", "password_hash": hash_password(
+                "driver123"), "full_name": "Павлов Егор Александрович", "role": "driver", "is_active": True},
+            {"email": "m.semenov@crm.ru", "password_hash": hash_password(
+                "driver123"), "full_name": "Семёнов Максим Дмитриевич", "role": "driver", "is_active": True},
         ]
         users = [User(**data) for data in users_data]
         session.add_all(users)
@@ -233,4 +254,4 @@ async def seed_data():
         print("База успешно заполнена!")
 
 if __name__ == "__main__":
-    asyncio.run(seed_data());
+    asyncio.run(seed_data())

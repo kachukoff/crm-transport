@@ -14,9 +14,10 @@ export default function Login() {
     setError(null);
     try {
       await login(email, password);
-      navigate('/'); // Редирект на главную страницу
+      navigate('/');
     } catch (err) {
-      setError('Неверный email или пароль');
+      // Показываем реальное сообщение от бэкенда
+      setError(err.message || 'Неверный email или пароль');
     }
   };
 

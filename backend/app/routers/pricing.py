@@ -6,11 +6,13 @@ from app.models.pricing import PricingRule
 from app.schemas.pricing import PricingRuleCreate, PricingRuleResponse
 from pydantic import BaseModel
 from typing import Optional
+from app.dependencies import require_admin
 
 router = APIRouter(prefix="/pricing", tags=["pricing"])
 
 
-@router.post("/", response_model=PricingRuleResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=PricingRuleResponse, status_code=status.HTTP_201_CREATED, 
+             dependencies=[Depends(require_admin)])
 async def create_pricing(pricing: PricingRuleCreate, db: AsyncSession = Depends(get_db)):
     db_pricing = PricingRule(**pricing.model_dump())
     db.add(db_pricing)
@@ -41,7 +43,8 @@ class PricingUpdate(BaseModel):
     price_per_kg: Optional[float] = None
 
 
-@router.patch("/{pricing_id}", response_model=PricingRuleResponse)
+@router.patch("/{pricing_id}", response_model=PricingRuleResponse, 
+              dependencies=[Depends(require_admin)])
 async def update_pricing(pricing_id: int, data: PricingUpdate, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(PricingRule).where(PricingRule.id == pricing_id))
     db_pricing = result.scalar_one_or_none()
@@ -56,7 +59,8 @@ async def update_pricing(pricing_id: int, data: PricingUpdate, db: AsyncSession 
     return db_pricing
 
 
-@router.delete("/{pricing_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{pricing_id}", status_code=status.HTTP_204_NO_CONTENT, 
+               dependencies=[Depends(require_admin)])
 async def delete_pricing(pricing_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(PricingRule).where(PricingRule.id == pricing_id))
     db_pricing = result.scalar_one_or_none()

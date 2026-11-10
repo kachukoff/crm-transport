@@ -7,11 +7,13 @@ from app.models.order import Order
 from app.schemas.client import ClientCreate, ClientResponse
 from pydantic import BaseModel
 from typing import Optional
+from app.dependencies import require_staff
 
 router = APIRouter(prefix="/clients", tags=["clients"])
 
 
-@router.post("/", response_model=ClientResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ClientResponse, status_code=status.HTTP_201_CREATED,
+             dependencies=[Depends(require_staff)])
 async def create_client(client: ClientCreate, db: AsyncSession = Depends(get_db)):
     db_client = Client(**client.model_dump())
     db.add(db_client)
@@ -45,7 +47,8 @@ class ClientUpdate(BaseModel):
     address: Optional[str] = None
 
 
-@router.patch("/{client_id}", response_model=ClientResponse)
+@router.patch("/{client_id}", response_model=ClientResponse,
+              dependencies=[Depends(require_staff)])
 async def update_client(client_id: int, data: ClientUpdate, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Client).where(Client.id == client_id))
     db_client = result.scalar_one_or_none()
@@ -61,7 +64,8 @@ async def update_client(client_id: int, data: ClientUpdate, db: AsyncSession = D
     return db_client
 
 
-@router.delete("/{client_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{client_id}", status_code=status.HTTP_204_NO_CONTENT,
+               dependencies=[Depends(require_staff)])
 async def delete_client(client_id: int, db: AsyncSession = Depends(get_db)):
     # 1. Проверяем, есть ли у клиента заказы
     result = await db.execute(select(func.count(Order.id)).where(Order.client_id == client_id))
