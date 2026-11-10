@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
+import ErrorMessage from '../components/ErrorMessage';
 
 function Drivers() {
   const queryClient = useQueryClient();
@@ -33,7 +34,7 @@ function Drivers() {
   };
 
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error.message}</div>;
+  if (error) return <ErrorMessage message={error.message} />;
 
   return (
     <>

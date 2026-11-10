@@ -40,13 +40,16 @@ async def create_order(order: OrderCreate, db: AsyncSession = Depends(get_db)):
     db_order = Order(**order.model_dump())
     db.add(db_order)
     await db.commit()
-    
+
     return await get_order_with_relations(db_order.id, db)
 
 
 # --- СПИСОК ЗАКАЗОВ (только персонал) ---
-@router.get("/", response_model=list[OrderResponse], dependencies=[Depends(require_staff)])
-async def get_orders(db: AsyncSession = Depends(get_db)):
+@router.get("/", response_model=list[OrderResponse])
+async def get_orders(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     query = (
         select(Order)
         .options(
@@ -57,6 +60,16 @@ async def get_orders(db: AsyncSession = Depends(get_db)):
         )
         .order_by(Order.id)
     )
+
+    # Если водитель — показываем только его заказы
+    if current_user.role == "driver":
+        driver_result = await db.execute(select(Driver).where(Driver.user_id == current_user.id))
+        driver = driver_result.scalar_one_or_none()
+        if driver:
+            query = query.where(Order.driver_id == driver.id)
+        else:
+            return []  # Если водитель не привязан к карточке — пустой список
+
     result = await db.execute(query)
     return result.scalars().all()
 
@@ -64,7 +77,7 @@ async def get_orders(db: AsyncSession = Depends(get_db)):
 # --- ОДИН ЗАКАЗ (для всех авторизованных, с проверкой для водителя) ---
 @router.get("/{order_id}", response_model=OrderResponse)
 async def get_single_order(
-    order_id: int, 
+    order_id: int,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -76,7 +89,8 @@ async def get_single_order(
         driver_result = await db.execute(select(Driver).where(Driver.user_id == current_user.id))
         driver = driver_result.scalar_one_or_none()
         if not driver or db_order.driver_id != driver.id:
-            raise HTTPException(status_code=403, detail="Вы можете просматривать только свои заказы")
+            raise HTTPException(
+                status_code=403, detail="Вы можете просматривать только свои заказы")
 
     return db_order
 
@@ -84,8 +98,8 @@ async def get_single_order(
 # --- СМЕНА СТАТУСА (для персонала И водителей) ---
 @router.patch("/{order_id}/status", response_model=OrderResponse)
 async def update_order_status(
-    order_id: int, 
-    data: OrderStatusUpdate, 
+    order_id: int,
+    data: OrderStatusUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -100,7 +114,8 @@ async def update_order_status(
         driver_result = await db.execute(select(Driver).where(Driver.user_id == current_user.id))
         driver = driver_result.scalar_one_or_none()
         if not driver or db_order.driver_id != driver.id:
-            raise HTTPException(status_code=403, detail="Вы можете менять статус только своих заказов")
+            raise HTTPException(
+                status_code=403, detail="Вы можете менять статус только своих заказов")
 
     # 3. Меняем статус
     db_order.status = data.status
@@ -117,23 +132,27 @@ async def update_order_status(
     if data.status == "assigned" and db_order.driver_id:
         driver_result = await db.execute(select(Driver).where(Driver.id == db_order.driver_id))
         driver = driver_result.scalar_one_or_none()
-        if driver: driver.status = "on_route"
-        
+        if driver:
+            driver.status = "on_route"
+
         if db_order.vehicle_id:
             vehicle_result = await db.execute(select(Vehicle).where(Vehicle.id == db_order.vehicle_id))
             vehicle = vehicle_result.scalar_one_or_none()
-            if vehicle: vehicle.status = "on_route"
+            if vehicle:
+                vehicle.status = "on_route"
 
     elif data.status in ["delivered", "cancelled"]:
         if db_order.driver_id:
             driver_result = await db.execute(select(Driver).where(Driver.id == db_order.driver_id))
             driver = driver_result.scalar_one_or_none()
-            if driver: driver.status = "available"
-            
+            if driver:
+                driver.status = "available"
+
         if db_order.vehicle_id:
             vehicle_result = await db.execute(select(Vehicle).where(Vehicle.id == db_order.vehicle_id))
             vehicle = vehicle_result.scalar_one_or_none()
-            if vehicle: vehicle.status = "available"
+            if vehicle:
+                vehicle.status = "available"
 
     await db.commit()
     return await get_order_with_relations(order_id, db)

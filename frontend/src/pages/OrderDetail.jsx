@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import { useState } from 'react';
 import Modal from '../components/Modal';
+import ErrorMessage from '../components/ErrorMessage';  
 
 function OrderDetail() {
   const { id } = useParams();
@@ -68,7 +69,7 @@ function OrderDetail() {
   });
 
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error.message}</div>;
+  if (error) return <ErrorMessage message={error.message} />;
   if (!order) return <div style={{ padding: '20px' }}>Заказ не найден</div>;
 
   const formatDate = (dateStr) => {

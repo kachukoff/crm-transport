@@ -76,7 +76,7 @@ function VehicleDetail() {
   };
 
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error.message}</div>;
+  if (error) return <ErrorMessage message={error.message} />;
   if (!vehicle) return <div style={{ padding: '20px' }}>Машина не найдена</div>;
 
   const typeMap = {

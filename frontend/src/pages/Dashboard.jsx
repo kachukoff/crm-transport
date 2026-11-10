@@ -1,28 +1,57 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
+import { useAuth } from '../context/AuthContext';
+import ErrorMessage from '../components/ErrorMessage';
 
 function Dashboard() {
+  const { user } = useAuth();
   const [summary, setSummary] = useState({ active_orders: 0, available_vehicles: 0, active_drivers: 0, new_orders: 0 });
   const [recentOrders, setRecentOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Загружаем статистику и последние заказы параллельно
+    // Водителю не нужно грузить общую статистику и все заказы
+    if (user?.role === 'driver') {
+      setLoading(false);
+      return;
+    }
+
     Promise.all([
       api.get('/dashboard/summary'),
-      api.get('/orders/') // Временно берем все заказы, потом отфильтруем
+      api.get('/orders/')
     ]).then(([summaryData, ordersData]) => {
       setSummary(summaryData);
-      // Берем последние 5 заказов (они уже отсортированы по возрастанию ID, поэтому берем с конца)
       setRecentOrders(ordersData.slice(-5).reverse());
       setLoading(false);
     }).catch(err => {
-      console.error(err);
+      setError(err.message);
       setLoading(false);
     });
-  }, []);
+  }, [user]);
 
   if (loading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (error) return <ErrorMessage message={error} />;
+
+  // Для водителя — упрощённый дашборд
+  if (user?.role === 'driver') {
+    return (
+      <>
+        <div className="page-header">
+          <div>
+            <h2 className="page-header__title">Обзор</h2>
+            <p className="page-header__subtitle">Добро пожаловать, {user.full_name}</p>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card__header">
+            <h3 className="card__title">Ваши заказы</h3>
+          </div>
+          <p>Перейдите в раздел «Заказы», чтобы увидеть свои рейсы.</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -115,4 +144,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard; 
+export default Dashboard;

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
+import ErrorMessage from '../components/ErrorMessage';
 
 function PricingDetail() {
   const { id } = useParams();
@@ -67,7 +68,7 @@ function PricingDetail() {
   };
 
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error.message}</div>;
+  if (error) return <ErrorMessage message={error.message} />;
   if (!pricing) return <div style={{ padding: '20px' }}>Тариф не найден</div>;
 
   const typeMap = {

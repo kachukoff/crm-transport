@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
 import { useNavigate, Link } from 'react-router-dom';
+import ErrorMessage from '../components/ErrorMessage';
 
 function Pricing() {
   const queryClient = useQueryClient();
@@ -43,7 +44,7 @@ function Pricing() {
   };
 
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error.message}</div>;
+  if (error) return <ErrorMessage message={error.message} />;
 
   const typeMap = {
     gazelle: 'Газель',
