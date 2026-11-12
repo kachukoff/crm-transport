@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';  // <-- добавили useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
+import { useAuth } from '../context/AuthContext';
 
 
 function Orders() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();  // <-- добавили
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -71,7 +73,11 @@ function Orders() {
           <p className="page-header__subtitle">Всего: {orders.length} заказов</p>
         </div>
         <div className="page-header__actions">
-          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>+ Создать заказ</button>
+          {user?.role !== 'driver' && (
+            <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+              + Создать заказ
+            </button>
+          )}
         </div>
       </div>
 
@@ -95,7 +101,7 @@ function Orders() {
               <tr><td colSpan="9" className="table__empty">Нет данных</td></tr>
             ) : (
               orders.map(order => (
-                <tr 
+                <tr
                   key={order.id}
                   onClick={() => navigate(`/orders/${order.id}`)}
                   style={{ cursor: 'pointer' }}
@@ -106,13 +112,12 @@ function Orders() {
                   <td>{order.driver?.full_name || '—'}</td>
                   <td className="table__cell-muted">{order.vehicle?.plate_number || '—'}</td>
                   <td>
-                    <span className={`badge ${
-                      order.status === 'new' ? 'badge--neutral' :
-                      order.status === 'assigned' ? 'badge--info' :
-                      order.status === 'in_progress' ? 'badge--warning' :
-                      order.status === 'delivered' ? 'badge--success' :
-                      order.status === 'completed' ? 'badge--primary' : 'badge--danger'
-                    }`}>
+                    <span className={`badge ${order.status === 'new' ? 'badge--neutral' :
+                        order.status === 'assigned' ? 'badge--info' :
+                          order.status === 'in_progress' ? 'badge--warning' :
+                            order.status === 'delivered' ? 'badge--success' :
+                              order.status === 'completed' ? 'badge--primary' : 'badge--danger'
+                      }`}>
                       {statusMap[order.status]}
                     </span>
                   </td>
