@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
 
 function Users() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -56,9 +58,11 @@ function Users() {
           <p className="page-header__subtitle">Сотрудники системы с доступом к CRM</p>
         </div>
         <div className="page-header__actions">
-          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-            + Добавить пользователя
-          </button>
+          {user?.role === 'admin' && (
+            <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+              + Добавить пользователя
+            </button>
+          )}
         </div>
       </div>
 
@@ -98,10 +102,9 @@ function Users() {
                   <td><strong>{user.full_name}</strong></td>
                   <td>{user.email}</td>
                   <td>
-                    <span className={`badge ${
-                      user.role === 'admin' ? 'badge--danger' :
-                      user.role === 'manager' ? 'badge--primary' : 'badge--info'
-                    }`}>
+                    <span className={`badge ${user.role === 'admin' ? 'badge--danger' :
+                        user.role === 'manager' ? 'badge--primary' : 'badge--info'
+                      }`}>
                       {roleMap[user.role] || user.role}
                     </span>
                   </td>
