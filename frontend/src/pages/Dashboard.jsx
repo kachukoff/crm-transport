@@ -44,7 +44,7 @@ function Dashboard() {
           </div>
         </div>
         <div className="card">
-          <div className="card__header">
+          <div className="card__header card__header--accent">
             <h3 className="card__title">Ваши заказы</h3>
           </div>
           <p>Перейдите в раздел «Заказы», чтобы увидеть свои рейсы.</p>
@@ -55,45 +55,64 @@ function Dashboard() {
 
   return (
     <>
-      <div className="page-header">
-        <div>
-          <h2 className="page-header__title">Обзор</h2>
-          <p className="page-header__subtitle">Актуальные показатели на {new Date().toLocaleDateString('ru-RU')}</p>
-        </div>
-      </div>
-
       <div className="cards-grid">
         <div className="card card--metric card--accent-primary">
+          <div className="card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 11l3 3L22 4" />
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+            </svg>
+          </div>
           <div className="card__value">{summary.active_orders}</div>
           <div className="card__label">Активные заказы</div>
         </div>
 
         <div className="card card--metric card--accent-success">
+          <div className="card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M1 3h15v13H1z" />
+              <path d="M16 8h4l3 3v5h-7V8z" />
+              <circle cx="5.5" cy="18.5" r="2.5" />
+              <circle cx="18.5" cy="18.5" r="2.5" />
+            </svg>
+          </div>
           <div className="card__value">{summary.available_vehicles}</div>
           <div className="card__label">Свободные машины</div>
         </div>
 
         <div className="card card--metric card--accent-warning">
+          <div className="card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" />
+            </svg>
+          </div>
           <div className="card__value">{summary.active_drivers}</div>
           <div className="card__label">Водители на смене</div>
         </div>
 
         <div className="card card--metric card--accent-info">
+          <div className="card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 11l3 3L22 4" />
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+            </svg>
+          </div>
           <div className="card__value">{summary.new_orders}</div>
           <div className="card__label">Новые заявки</div>
         </div>
       </div>
 
-      <div className="card">
-        <div className="card__header">
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div className="card__header" style={{ padding: '20px 24px', marginBottom: 0, borderBottom: '1px solid #f3f4f6' }}>
           <div>
             <h3 className="card__title">Последние заказы</h3>
             <p className="card__subtitle">5 последних изменений</p>
           </div>
-          <a href="/orders" className="btn btn--ghost btn--sm">Все заказы →</a>
+          <a href="/orders" className="btn btn--ghost btn--secondary">Все заказы →</a>
         </div>
 
-        <div className="table-wrapper" style={{ boxShadow: 'none', border: 'none' }}>
+        <div className="table-wrapper">
           <table className="table">
             <thead>
               <tr>
@@ -115,18 +134,17 @@ function Dashboard() {
                     <td>{order.client?.name || '—'}</td>
                     <td>{order.route ? `${order.route.from_address} → ${order.route.to_address}` : '—'}</td>
                     <td>
-                      <span className={`badge ${
-                        order.status === 'new' ? 'badge--neutral' :
+                      <span className={`badge ${order.status === 'new' ? 'badge--neutral' :
                         order.status === 'assigned' ? 'badge--info' :
-                        order.status === 'in_progress' ? 'badge--warning' :
-                        order.status === 'delivered' ? 'badge--success' :
-                        order.status === 'completed' ? 'badge--primary' : 'badge--danger'
-                      }`}>
+                          order.status === 'in_progress' ? 'badge--warning' :
+                            order.status === 'delivered' ? 'badge--success' :
+                              order.status === 'completed' ? 'badge--primary' : 'badge--danger'
+                        }`}>
                         {order.status === 'new' ? 'Новый' :
-                         order.status === 'assigned' ? 'Назначен' :
-                         order.status === 'in_progress' ? 'В пути' :
-                         order.status === 'delivered' ? 'Доставлен' :
-                         order.status === 'completed' ? 'Завершён' : 'Отменён'}
+                          order.status === 'assigned' ? 'Назначен' :
+                            order.status === 'in_progress' ? 'В пути' :
+                              order.status === 'delivered' ? 'Доставлен' :
+                                order.status === 'completed' ? 'Завершён' : 'Отменён'}
                       </span>
                     </td>
                     <td>{order.price ? `${order.price} ₽` : '—'}</td>

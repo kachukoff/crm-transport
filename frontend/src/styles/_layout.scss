@@ -15,9 +15,10 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  background-color: $color-surface;
-  border-right: 1px solid $color-border;
+  background-color: #1e1e2d; // тёмный фон
+  border-right: 1px solid #2a2a3c;
   padding: $space-4 0;
+  color: #a2a3b7;
 
   &__logo {
     display: flex;
@@ -26,8 +27,8 @@
     padding: 0 $space-5 $space-5;
     font-size: $font-size-lg;
     font-weight: $font-weight-bold;
-    color: $color-text;
-    border-bottom: 1px solid $color-border;
+    color: #ffffff; // белый текст
+    border-bottom: 1px solid #2a2a3c;
     margin-bottom: $space-4;
   }
 
@@ -38,50 +39,103 @@
     width: 32px;
     height: 32px;
     background-color: $color-primary;
-    color: $color-text-invert;
+    color: #ffffff;
     border-radius: $radius-md;
     font-weight: $font-weight-bold;
     font-size: $font-size-md;
   }
 
+  &__profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: $space-2;
+    padding: $space-4 $space-5;
+    margin-bottom: $space-4;
+    border-bottom: 1px solid #2a2a3c;
+
+    &-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: $radius-full;
+      background-color: $color-primary;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: $font-weight-bold;
+      font-size: $font-size-lg;
+      flex-shrink: 0;
+    }
+
+    &-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 0;
+      width: 100%;
+    }
+
+    &-name {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: #ffffff;
+      text-transform: capitalize;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    &-role {
+      font-size: $font-size-xs;
+      color: #a2a3b7;
+    }
+  }
+
   &__nav {
     display: flex;
     flex-direction: column;
-    gap: $space-1;
+    gap: $space-1; // 4px (было 8px)
     padding: 0 $space-3;
-    flex: 1;
+    flex: 0;
   }
 
   &__link {
     display: flex;
     align-items: center;
-    gap: $space-3;
-    padding: $space-2 $space-3;
-    color: $color-text-muted;
+    gap: $space-3; // 12px (было 16px)
+    padding: $space-3 $space-4; // 12px 16px (было 16px 16px)
+    color: #a2a3b7;
     border-radius: $radius-md;
     font-weight: $font-weight-medium;
-    transition: background-color $transition-fast, color $transition-fast;
+    font-size: $font-size-base; // 14px (было 16px)
+    text-transform: uppercase;
+    letter-spacing: 0.03em; // 0.03em (было 0.05em)
+    transition: all $transition-fast;
 
     &:hover {
-      background-color: $color-surface-alt;
-      color: $color-text;
+      background-color: #2a2a3c;
+      color: #ffffff;
     }
 
     &.is-active {
-      background-color: $color-primary-soft;
-      color: $color-primary;
+      background-color: $color-primary;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
     }
   }
 
   &__icon {
-    width: 18px;
-    height: 18px;
+    width: 20px; // 20px (было 24px)
+    height: 20px;
     flex-shrink: 0;
   }
 
   &__footer {
     padding: $space-4 $space-3 0;
-    border-top: 1px solid $color-border;
+    border-top: 1px solid #2a2a3c;
     margin-top: $space-4;
   }
 
@@ -94,7 +148,7 @@
     transition: background-color $transition-fast;
 
     &:hover {
-      background-color: $color-surface-alt;
+      background-color: #2a2a3c;
     }
   }
 
@@ -103,8 +157,10 @@
     height: 32px;
     border-radius: $radius-full;
     background-color: $color-primary;
-    color: $color-text-invert;
-    @include flex-center;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: $font-weight-bold;
     font-size: $font-size-sm;
     flex-shrink: 0;
@@ -119,13 +175,15 @@
   &__user-name {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $color-text;
-    @include truncate;
+    color: #ffffff;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   &__user-role {
     font-size: $font-size-xs;
-    color: $color-text-muted;
+    color: #a2a3b7;
   }
 }
 
@@ -144,38 +202,148 @@
   gap: $space-4;
   height: $header-height;
   padding: 0 $space-6;
-  background-color: $color-surface;
-  border-bottom: 1px solid $color-border;
+  background-color: #1e1e2d;  // тёмный фон
+  border-bottom: 1px solid #2a2a3c;
+  color: #ffffff;
 
-  &__title {
-    font-size: $font-size-lg;
-    font-weight: $font-weight-bold;
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: $space-4;
+    flex: 1;
   }
 
-  &__breadcrumbs {
+  &__burger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    color: #a2a3b7;
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      background-color: #2a2a3c;
+      color: #ffffff;
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &__search {
     display: flex;
     align-items: center;
     gap: $space-2;
-    font-size: $font-size-sm;
-    color: $color-text-muted;
+    background-color: #2a2a3c;
+    border-radius: $radius-md;
+    padding: 0 $space-4;
+    height: 40px;
+    width: 100%;
+    max-width: 400px;
+    color: #a2a3b7;
 
-    a {
-      color: $color-text-muted;
+    &-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
 
-      &:hover {
-        color: $color-text;
+    &-input {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: $font-size-sm;
+      width: 100%;
+      outline: none;
+
+      &::placeholder {
+        color: #a2a3b7;
       }
     }
-
-    &-sep {
-      color: $color-text-muted;
-    }
   }
 
-  &__actions {
+  &__right {
     display: flex;
     align-items: center;
     gap: $space-2;
+  }
+
+  &__icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    color: #a2a3b7;
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      background-color: #2a2a3c;
+      color: #ffffff;
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &__profile {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    cursor: pointer;
+    padding: $space-2 $space-3;
+    border-radius: $radius-md;
+    transition: background-color $transition-fast;
+    margin-left: $space-2;
+
+    &:hover {
+      background-color: #2a2a3c;
+    }
+  }
+
+  &__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-full;
+    background-color: $color-primary;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: $font-weight-bold;
+    font-size: $font-size-sm;
+    flex-shrink: 0;
+  }
+
+  &__user-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+
+  &__user-name {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: #ffffff;
+    text-transform: uppercase;  // <-- ФИО заглавными
+  }
+
+  &__user-role {
+    font-size: $font-size-xs;
+    color: #a2a3b7;
   }
 }
 
@@ -186,7 +354,7 @@
 }
 
 // --- Заголовок страницы ---
-.page-header {
+  .page-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -194,8 +362,10 @@
   margin-bottom: $space-6;
 
   &__title {
-    font-size: $font-size-xl;
+    font-size: $font-size-lg;
     font-weight: $font-weight-bold;
+    color: $color-text;
+    letter-spacing: -0.01em;
     margin-bottom: $space-1;
   }
 
