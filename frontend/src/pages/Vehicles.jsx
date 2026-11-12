@@ -1,14 +1,17 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
+import { useAuth } from '../context/AuthContext';
 
 function Vehicles() {
   const queryClient = useQueryClient();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [formData, setFormData] = useState({
     plate_number: '',
     brand: '',
@@ -17,13 +20,11 @@ function Vehicles() {
     capacity_kg: '',
   });
 
-  // Загрузка машин
   const { data: vehicles = [], isLoading, error } = useQuery({
     queryKey: ['vehicles'],
     queryFn: () => api.get('/vehicles/'),
   });
 
-  // Мутация создания машины
   const createVehicle = useMutation({
     mutationFn: (newVehicle) => api.post('/vehicles/', newVehicle),
     onSuccess: () => {
@@ -35,11 +36,9 @@ function Vehicles() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Очищаем пустые строки
     const cleanData = Object.fromEntries(
       Object.entries(formData).filter(([_, value]) => value !== '')
     );
-    // capacity_kg должен быть числом
     if (cleanData.capacity_kg) {
       cleanData.capacity_kg = Number(cleanData.capacity_kg);
     }
@@ -58,18 +57,6 @@ function Vehicles() {
 
   return (
     <>
-      <div className="page-header">
-        <div>
-          <h2 className="page-header__title">Все машины</h2>
-          <p className="page-header__subtitle">Всего: {vehicles.length} машин</p>
-        </div>
-        <div className="page-header__actions">
-          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-            + Добавить машину
-          </button>
-        </div>
-      </div>
-
       <div className="toolbar">
         <input className="input toolbar__search" type="search" placeholder="Поиск по госномеру или марке..." />
         <select className="select select--auto">
@@ -78,6 +65,12 @@ function Vehicles() {
           <option value="on_route">В рейсе</option>
           <option value="maintenance">На ремонте</option>
         </select>
+        <div className="toolbar__spacer" />
+        {user?.role !== 'driver' && (
+          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+            + Добавить машину
+          </button>
+        )}
       </div>
 
       <div className="table-wrapper">
@@ -89,13 +82,12 @@ function Vehicles() {
               <th>Тип</th>
               <th>Грузоподъёмность</th>
               <th>Статус</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
             {vehicles.length === 0 ? (
               <tr>
-                <td colSpan="6" className="table__empty">Нет данных</td>
+                <td colSpan="5" className="table__empty">Нет данных</td>
               </tr>
             ) : (
               vehicles.map(vehicle => (
@@ -116,9 +108,6 @@ function Vehicles() {
                         vehicle.status === 'on_route' ? 'В рейсе' : 'На ремонте'}
                     </span>
                   </td>
-                  <td className="table__cell-actions" onClick={(e) => e.stopPropagation()}>
-                    <Link to={`/vehicles/${vehicle.id}`} className="btn btn--ghost btn--sm">Открыть</Link>
-                  </td>
                 </tr>
               ))
             )}
@@ -126,7 +115,6 @@ function Vehicles() {
         </table>
       </div>
 
-      {/* Модалка создания машины */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Добавить машину">
         <form onSubmit={handleSubmit}>
           <div className="form-group">

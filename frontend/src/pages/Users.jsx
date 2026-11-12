@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -52,20 +52,6 @@ function Users() {
 
   return (
     <>
-      <div className="page-header">
-        <div>
-          <h2 className="page-header__title">Пользователи</h2>
-          <p className="page-header__subtitle">Сотрудники системы с доступом к CRM</p>
-        </div>
-        <div className="page-header__actions">
-          {user?.role === 'admin' && (
-            <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-              + Добавить пользователя
-            </button>
-          )}
-        </div>
-      </div>
-
       <div className="toolbar">
         <input className="input toolbar__search" type="search" placeholder="Поиск по ФИО или email..." />
         <select className="select select--auto">
@@ -74,6 +60,12 @@ function Users() {
           <option value="manager">Менеджер</option>
           <option value="driver">Водитель</option>
         </select>
+        <div className="toolbar__spacer" />
+        {user?.role === 'admin' && (
+          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+            + Добавить пользователя
+          </button>
+        )}
       </div>
 
       <div className="table-wrapper">
@@ -84,37 +76,33 @@ function Users() {
               <th>Email</th>
               <th>Роль</th>
               <th>Статус</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
             {users.length === 0 ? (
               <tr>
-                <td colSpan="5" className="table__empty">Нет данных</td>
+                <td colSpan="4" className="table__empty">Нет данных</td>
               </tr>
             ) : (
-              users.map(user => (
+              users.map(u => (
                 <tr
-                  key={user.id}
-                  onClick={() => navigate(`/users/${user.id}`)}
+                  key={u.id}
+                  onClick={() => navigate(`/users/${u.id}`)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <td><strong>{user.full_name}</strong></td>
-                  <td>{user.email}</td>
+                  <td><strong>{u.full_name}</strong></td>
+                  <td>{u.email}</td>
                   <td>
-                    <span className={`badge ${user.role === 'admin' ? 'badge--danger' :
-                        user.role === 'manager' ? 'badge--primary' : 'badge--info'
+                    <span className={`badge ${u.role === 'admin' ? 'badge--danger' :
+                        u.role === 'manager' ? 'badge--primary' : 'badge--info'
                       }`}>
-                      {roleMap[user.role] || user.role}
+                      {roleMap[u.role] || u.role}
                     </span>
                   </td>
                   <td>
-                    <span className={`badge ${user.is_active ? 'badge--success' : 'badge--neutral'}`}>
-                      {user.is_active ? 'Активен' : 'Заблокирован'}
+                    <span className={`badge ${u.is_active ? 'badge--success' : 'badge--neutral'}`}>
+                      {u.is_active ? 'Активен' : 'Заблокирован'}
                     </span>
-                  </td>
-                  <td className="table__cell-actions" onClick={(e) => e.stopPropagation()}>
-                    <Link to={`/users/${user.id}`} className="btn btn--ghost btn--sm">Открыть</Link>
                   </td>
                 </tr>
               ))
@@ -123,7 +111,6 @@ function Users() {
         </table>
       </div>
 
-      {/* Модалка создания пользователя */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Добавить пользователя">
         <form onSubmit={handleSubmit}>
           <div className="form-group">

@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';  // <-- добавили useNavigate
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
+import { useAuth } from '../context/AuthContext';  // <-- добавили
 
 function Clients() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();  // <-- добавили
+  const navigate = useNavigate();
+  const { user } = useAuth();  // <-- получаем текущего пользователя
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -46,18 +48,6 @@ function Clients() {
 
   return (
     <>
-      <div className="page-header">
-        <div>
-          <h2 className="page-header__title">Все клиенты</h2>
-          <p className="page-header__subtitle">Всего: {clients.length} клиентов</p>
-        </div>
-        <div className="page-header__actions">
-          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-            + Добавить клиента
-          </button>
-        </div>
-      </div>
-
       <div className="toolbar">
         <input className="input toolbar__search" type="search" placeholder="Поиск по названию или ИНН..." />
         <select className="select select--auto">
@@ -65,6 +55,14 @@ function Clients() {
           <option value="legal">Юридические лица</option>
           <option value="individual">Физические лица</option>
         </select>
+        <div className="toolbar__spacer" />
+        
+        {/* Кнопка добавления — только для админа и менеджера */}
+        {user?.role !== 'driver' && (
+          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+            + Добавить клиента
+          </button>
+        )}
       </div>
 
       <div className="table-wrapper">
@@ -76,20 +74,19 @@ function Clients() {
               <th>ИНН</th>
               <th>Контактное лицо</th>
               <th>Телефон</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
             {clients.length === 0 ? (
               <tr>
-                <td colSpan="6" className="table__empty">Нет данных</td>
+                <td colSpan="5" className="table__empty">Нет данных</td>
               </tr>
             ) : (
               clients.map(client => (
-                <tr 
+                <tr
                   key={client.id}
-                  onClick={() => navigate(`/clients/${client.id}`)}  // <-- клик по строке
-                  style={{ cursor: 'pointer' }}                   // <-- курсор-рука
+                  onClick={() => navigate(`/clients/${client.id}`)}
+                  style={{ cursor: 'pointer' }}
                 >
                   <td><strong>{client.name}</strong></td>
                   <td>
@@ -100,9 +97,6 @@ function Clients() {
                   <td className="table__cell-muted">{client.inn || '—'}</td>
                   <td>{client.contact_person || '—'}</td>
                   <td>{client.phone || '—'}</td>
-                  <td className="table__cell-actions" onClick={(e) => e.stopPropagation()}>
-                    <Link to={`/clients/${client.id}`} className="btn btn--ghost btn--sm">Открыть</Link>
-                  </td>
                 </tr>
               ))
             )}
@@ -115,8 +109,8 @@ function Clients() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-group__label">Тип клиента</label>
-            <select 
-              className="select" 
+            <select
+              className="select"
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
             >
@@ -127,9 +121,9 @@ function Clients() {
 
           <div className="form-group">
             <label className="form-group__label">Название / ФИО</label>
-            <input 
-              className="input" 
-              required 
+            <input
+              className="input"
+              required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
@@ -137,8 +131,8 @@ function Clients() {
 
           <div className="form-group">
             <label className="form-group__label">ИНН (опционально)</label>
-            <input 
-              className="input" 
+            <input
+              className="input"
               value={formData.inn}
               onChange={(e) => setFormData({ ...formData, inn: e.target.value })}
             />
@@ -146,8 +140,8 @@ function Clients() {
 
           <div className="form-group">
             <label className="form-group__label">Контактное лицо</label>
-            <input 
-              className="input" 
+            <input
+              className="input"
               value={formData.contact_person}
               onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
             />
@@ -155,8 +149,8 @@ function Clients() {
 
           <div className="form-group">
             <label className="form-group__label">Телефон</label>
-            <input 
-              className="input" 
+            <input
+              className="input"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             />
@@ -164,8 +158,8 @@ function Clients() {
 
           <div className="form-group">
             <label className="form-group__label">Email</label>
-            <input 
-              className="input" 
+            <input
+              className="input"
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}

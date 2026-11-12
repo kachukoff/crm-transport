@@ -1,27 +1,26 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
+import { useAuth } from '../context/AuthContext';
 
 function Drivers() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ full_name: '', phone: '', license_number: '' });
-  const navigate = useNavigate();
 
-  // Загрузка водителей через TanStack Query
   const { data: drivers = [], isLoading, error } = useQuery({
     queryKey: ['drivers'],
     queryFn: () => api.get('/drivers/'),
   });
 
-  // Мутация для создания водителя
   const createDriver = useMutation({
     mutationFn: (newDriver) => api.post('/drivers/', newDriver),
     onSuccess: () => {
-      // После успешного создания обновляем список
       queryClient.invalidateQueries({ queryKey: ['drivers'] });
       setIsModalOpen(false);
       setFormData({ full_name: '', phone: '', license_number: '' });
@@ -38,18 +37,6 @@ function Drivers() {
 
   return (
     <>
-      <div className="page-header">
-        <div>
-          <h2 className="page-header__title">Все водители</h2>
-          <p className="page-header__subtitle">Всего: {drivers.length} водителей</p>
-        </div>
-        <div className="page-header__actions">
-          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-            + Добавить водителя
-          </button>
-        </div>
-      </div>
-
       <div className="toolbar">
         <input className="input toolbar__search" type="search" placeholder="Поиск по ФИО или телефону..." />
         <select className="select select--auto">
@@ -59,6 +46,12 @@ function Drivers() {
           <option value="day_off">Выходной</option>
           <option value="fired">Уволен</option>
         </select>
+        <div className="toolbar__spacer" />
+        {user?.role !== 'driver' && (
+          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+            + Добавить водителя
+          </button>
+        )}
       </div>
 
       <div className="table-wrapper">
@@ -70,13 +63,12 @@ function Drivers() {
               <th>Права</th>
               <th>Статус</th>
               <th>Машина</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
             {drivers.length === 0 ? (
               <tr>
-                <td colSpan="6" className="table__empty">Нет данных</td>
+                <td colSpan="5" className="table__empty">Нет данных</td>
               </tr>
             ) : (
               drivers.map(driver => (
@@ -99,11 +91,6 @@ function Drivers() {
                     </span>
                   </td>
                   <td className="table__cell-muted">{driver.vehicle_plate || '—'}</td>
-                  <td className="table__cell-actions" onClick={(e) => e.stopPropagation()}>
-                    <Link to={`/drivers/${driver.id}`} className="btn btn--ghost btn--sm">
-                      Открыть
-                    </Link>
-                  </td>
                 </tr>
               ))
             )}
@@ -111,7 +98,6 @@ function Drivers() {
         </table>
       </div>
 
-      {/* Модальное окно для добавления */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Добавить водителя">
         <form onSubmit={handleSubmit}>
           <div className="form-group">

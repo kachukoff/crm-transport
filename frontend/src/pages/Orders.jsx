@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
-import { useAuth } from '../context/AuthContext';
-
 
 function Orders() {
   const queryClient = useQueryClient();
@@ -36,6 +35,11 @@ function Orders() {
     queryFn: () => api.get('/routes/'),
   });
 
+  const { data: drivers = [] } = useQuery({
+    queryKey: ['drivers'],
+    queryFn: () => api.get('/drivers/'),
+  });
+
   const createOrder = useMutation({
     mutationFn: (newOrder) => api.post('/orders/', newOrder),
     onSuccess: () => {
@@ -51,14 +55,14 @@ function Orders() {
       client_id: Number(formData.client_id),
       route_id: Number(formData.route_id),
       cargo_name: formData.cargo_name,
-      weight_kg: formData.weight_kg ? Number(formData.weight_kg) : null,
+      weight_kg: Number(formData.weight_kg),
       price: formData.price ? Number(formData.price) : null,
       source: 'manager_manual',
     });
   };
 
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error.message}</div>;
+  if (error) return <ErrorMessage message={error.message} />;
 
   const statusMap = {
     new: 'Новый', assigned: 'Назначен', in_progress: 'В пути',
@@ -67,18 +71,33 @@ function Orders() {
 
   return (
     <>
-      <div className="page-header">
-        <div>
-          <h2 className="page-header__title">Все заказы</h2>
-          <p className="page-header__subtitle">Всего: {orders.length} заказов</p>
-        </div>
-        <div className="page-header__actions">
-          {user?.role !== 'driver' && (
-            <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-              + Создать заказ
-            </button>
-          )}
-        </div>
+      <div className="toolbar">
+        <input className="input toolbar__search" type="search" placeholder="Поиск по номеру, клиенту или маршруту..." />
+        
+        <select className="select select--auto">
+          <option value="">Все статусы</option>
+          <option value="new">Новые</option>
+          <option value="assigned">Назначенные</option>
+          <option value="in_progress">В пути</option>
+          <option value="delivered">Доставленные</option>
+          <option value="completed">Завершённые</option>
+          <option value="cancelled">Отменённые</option>
+        </select>
+
+        <select className="select select--auto">
+          <option value="">Все водители</option>
+          {drivers.map(d => (
+            <option key={d.id} value={d.id}>{d.full_name}</option>
+          ))}
+        </select>
+        
+        <div className="toolbar__spacer" />
+        
+        {user?.role !== 'driver' && (
+          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+            + Создать заказ
+          </button>
+        )}
       </div>
 
       <div className="table-wrapper">
@@ -93,15 +112,14 @@ function Orders() {
               <th>Статус</th>
               <th>Цена</th>
               <th>Дата</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
             {orders.length === 0 ? (
-              <tr><td colSpan="9" className="table__empty">Нет данных</td></tr>
+              <tr><td colSpan="8" className="table__empty">Нет данных</td></tr>
             ) : (
               orders.map(order => (
-                <tr
+                <tr 
                   key={order.id}
                   onClick={() => navigate(`/orders/${order.id}`)}
                   style={{ cursor: 'pointer' }}
@@ -112,21 +130,19 @@ function Orders() {
                   <td>{order.driver?.full_name || '—'}</td>
                   <td className="table__cell-muted">{order.vehicle?.plate_number || '—'}</td>
                   <td>
-                    <span className={`badge ${order.status === 'new' ? 'badge--neutral' :
-                        order.status === 'assigned' ? 'badge--info' :
-                          order.status === 'in_progress' ? 'badge--warning' :
-                            order.status === 'delivered' ? 'badge--success' :
-                              order.status === 'completed' ? 'badge--primary' : 'badge--danger'
-                      }`}>
+                    <span className={`badge ${
+                      order.status === 'new' ? 'badge--neutral' :
+                      order.status === 'assigned' ? 'badge--info' :
+                      order.status === 'in_progress' ? 'badge--warning' :
+                      order.status === 'delivered' ? 'badge--success' :
+                      order.status === 'completed' ? 'badge--primary' : 'badge--danger'
+                    }`}>
                       {statusMap[order.status]}
                     </span>
                   </td>
                   <td>{order.price ? `${order.price} ₽` : '—'}</td>
                   <td className="table__cell-muted">
                     {new Date(order.created_at.slice(0, 23)).toLocaleDateString('ru-RU')}
-                  </td>
-                  <td className="table__cell-actions" onClick={(e) => e.stopPropagation()}>
-                    <Link to={`/orders/${order.id}`} className="btn btn--ghost btn--sm">Открыть</Link>
                   </td>
                 </tr>
               ))

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
@@ -8,9 +8,9 @@ import ErrorMessage from '../components/ErrorMessage';
 
 function Pricing() {
   const queryClient = useQueryClient();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     vehicle_type: 'gazelle',
@@ -19,13 +19,11 @@ function Pricing() {
     price_per_kg: '',
   });
 
-  // Загрузка тарифов
   const { data: pricing = [], isLoading, error } = useQuery({
     queryKey: ['pricing'],
     queryFn: () => api.get('/pricing/'),
   });
 
-  // Мутация создания тарифа
   const createPricing = useMutation({
     mutationFn: (newPricing) => api.post('/pricing/', newPricing),
     onSuccess: () => {
@@ -57,20 +55,6 @@ function Pricing() {
 
   return (
     <>
-      <div className="page-header">
-        <div>
-          <h2 className="page-header__title">Тарифы</h2>
-          <p className="page-header__subtitle">Настройка ценообразования по типам транспорта</p>
-        </div>
-        <div className="page-header__actions">
-          {user?.role === 'admin' && (
-            <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-              + Добавить тариф
-            </button>
-          )}
-        </div>
-      </div>
-
       <div className="toolbar">
         <input className="input toolbar__search" type="search" placeholder="Поиск по типу транспорта..." />
         <select className="select select--auto">
@@ -80,6 +64,12 @@ function Pricing() {
           <option value="truck">Фура</option>
           <option value="refrigerator">Рефрижератор</option>
         </select>
+        <div className="toolbar__spacer" />
+        {user?.role === 'admin' && (
+          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+            + Добавить тариф
+          </button>
+        )}
       </div>
 
       <div className="table-wrapper">
@@ -90,13 +80,12 @@ function Pricing() {
               <th>Базовая ставка</th>
               <th>За км</th>
               <th>За кг</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
             {pricing.length === 0 ? (
               <tr>
-                <td colSpan="5" className="table__empty">Нет данных</td>
+                <td colSpan="4" className="table__empty">Нет данных</td>
               </tr>
             ) : (
               pricing.map(rule => (
@@ -109,9 +98,6 @@ function Pricing() {
                   <td>{rule.base_rate} ₽</td>
                   <td>{rule.price_per_km} ₽</td>
                   <td>{rule.price_per_kg} ₽</td>
-                  <td className="table__cell-actions" onClick={(e) => e.stopPropagation()}>
-                    <Link to={`/pricing/${rule.id}`} className="btn btn--ghost btn--sm">Редактировать</Link>
-                  </td>
                 </tr>
               ))
             )}
@@ -119,7 +105,6 @@ function Pricing() {
         </table>
       </div>
 
-      {/* Модалка создания тарифа */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Добавить тариф">
         <form onSubmit={handleSubmit}>
           <div className="form-group">
