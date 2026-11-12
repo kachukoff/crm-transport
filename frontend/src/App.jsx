@@ -10,6 +10,12 @@ import Vehicles from './pages/Vehicles.jsx'
 import Pricing from './pages/Pricing.jsx'
 import Users from './pages/Users.jsx'
 import Profile from './pages/Profile.jsx'
+import OrderDetail from './pages/OrderDetail.jsx';
+import ClientDetail from './pages/ClientDetail.jsx';
+import DriverDetail from './pages/DriverDetail.jsx';
+import VehicleDetail from './pages/VehicleDetail.jsx';
+import PricingDetail from './pages/PricingDetail.jsx';
+import UserDetail from './pages/UserDetail.jsx';
 
 function App() {
   return (
@@ -28,9 +34,21 @@ function App() {
         </ProtectedRoute>
       } />
 
+      <Route path="/orders/:id" element={
+        <ProtectedRoute>
+          <Layout title="Заказ"><OrderDetail /></Layout>
+        </ProtectedRoute>
+      } />
+
       <Route path="/clients" element={
         <ProtectedRoute>
           <Layout title="Клиенты"><Clients /></Layout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/clients/:id" element={
+        <ProtectedRoute>
+          <Layout title="Клиент"><ClientDetail /></Layout>
         </ProtectedRoute>
       } />
 
@@ -40,9 +58,21 @@ function App() {
         </ProtectedRoute>
       } />
 
+      <Route path="/drivers/:id" element={
+        <ProtectedRoute>
+          <Layout title="Водитель"><DriverDetail /></Layout>
+        </ProtectedRoute>
+      } />
+
       <Route path="/vehicles" element={
         <ProtectedRoute>
           <Layout title="Машины"><Vehicles /></Layout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/vehicles/:id" element={
+        <ProtectedRoute>
+          <Layout title="Машина"><VehicleDetail /></Layout>
         </ProtectedRoute>
       } />
 
@@ -52,9 +82,21 @@ function App() {
         </ProtectedRoute>
       } />
 
+      <Route path="/pricing/:id" element={
+        <ProtectedRoute>
+          <Layout title="Тариф"><PricingDetail /></Layout>
+        </ProtectedRoute>
+      } />
+
       <Route path="/users" element={
         <ProtectedRoute>
           <Layout title="Пользователи"><Users /></Layout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/users/:id" element={
+        <ProtectedRoute>
+          <Layout title="Пользователь"><UserDetail /></Layout>
         </ProtectedRoute>
       } />
 
@@ -67,4 +109,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

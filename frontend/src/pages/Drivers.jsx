@@ -1,26 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
+import Modal from '../components/Modal';
+import ErrorMessage from '../components/ErrorMessage';
 
 function Drivers() {
-  const [drivers, setDrivers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ full_name: '', phone: '', license_number: '' });
+  const navigate = useNavigate();
 
-  // Загружаем данные при монтировании компонента
-  useEffect(() => {
-    api.get('/drivers/')
-      .then(data => {
-        setDrivers(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  // Загрузка водителей через TanStack Query
+  const { data: drivers = [], isLoading, error } = useQuery({
+    queryKey: ['drivers'],
+    queryFn: () => api.get('/drivers/'),
+  });
 
-  if (loading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>Ошибка: {error}</div>;
+  // Мутация для создания водителя
+  const createDriver = useMutation({
+    mutationFn: (newDriver) => api.post('/drivers/', newDriver),
+    onSuccess: () => {
+      // После успешного создания обновляем список
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      setIsModalOpen(false);
+      setFormData({ full_name: '', phone: '', license_number: '' });
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    createDriver.mutate(formData);
+  };
+
+  if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (error) return <ErrorMessage message={error.message} />;
 
   return (
     <>
@@ -30,7 +44,9 @@ function Drivers() {
           <p className="page-header__subtitle">Всего: {drivers.length} водителей</p>
         </div>
         <div className="page-header__actions">
-          <button className="btn btn--primary">+ Добавить водителя</button>
+          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+            + Добавить водителя
+          </button>
         </div>
       </div>
 
@@ -64,43 +80,77 @@ function Drivers() {
               </tr>
             ) : (
               drivers.map(driver => (
-                <tr key={driver.id}>
+                <tr
+                  key={driver.id}
+                  onClick={() => navigate(`/drivers/${driver.id}`)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <td><strong>{driver.full_name}</strong></td>
                   <td>{driver.phone || '—'}</td>
                   <td className="table__cell-muted">{driver.license_number || '—'}</td>
                   <td>
-                    <span className={`badge ${
-                      driver.status === 'available' ? 'badge--success' :
+                    <span className={`badge ${driver.status === 'available' ? 'badge--success' :
                       driver.status === 'on_route' ? 'badge--warning' :
-                      driver.status === 'day_off' ? 'badge--neutral' : 'badge--danger'
-                    }`}>
+                        driver.status === 'day_off' ? 'badge--neutral' : 'badge--danger'
+                      }`}>
                       {driver.status === 'available' ? 'Свободен' :
-                       driver.status === 'on_route' ? 'В рейсе' :
-                       driver.status === 'day_off' ? 'Выходной' : 'Уволен'}
+                        driver.status === 'on_route' ? 'В рейсе' :
+                          driver.status === 'day_off' ? 'Выходной' : 'Уволен'}
                     </span>
                   </td>
-                  <td className="table__cell-muted">{driver.vehicle_plate || '—'}</td> 
-                  <td className="table__cell-actions">
-                    <button className="btn btn--ghost btn--sm">Открыть</button>
+                  <td className="table__cell-muted">{driver.vehicle_plate || '—'}</td>
+                  <td className="table__cell-actions" onClick={(e) => e.stopPropagation()}>
+                    <Link to={`/drivers/${driver.id}`} className="btn btn--ghost btn--sm">
+                      Открыть
+                    </Link>
                   </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
-        
-        {/* Пагинация (пока статичная) */}
-        <div className="pagination">
-          <div>Показано 1–{drivers.length} из {drivers.length}</div>
-          <div className="pagination__controls">
-            <button className="pagination__btn" disabled>←</button>
-            <button className="pagination__btn is-active">1</button>
-            <button className="pagination__btn" disabled>→</button>
-          </div>
-        </div>
       </div>
+
+      {/* Модальное окно для добавления */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Добавить водителя">
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-group__label">ФИО</label>
+            <input
+              className="input"
+              value={formData.full_name}
+              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-group__label">Телефон</label>
+            <input
+              className="input"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-group__label">Номер прав</label>
+            <input
+              className="input"
+              value={formData.license_number}
+              onChange={(e) => setFormData({ ...formData, license_number: e.target.value })}
+            />
+          </div>
+          <div className="form-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>
+              Отмена
+            </button>
+            <button type="submit" className="btn btn--primary" disabled={createDriver.isPending}>
+              {createDriver.isPending ? 'Сохранение...' : 'Сохранить'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </>
-  )
+  );
 }
 
-export default Drivers
+export default Drivers;

@@ -68,21 +68,27 @@ function Sidebar() {
           <span>Машины</span>
         </NavLink>
 
-        <NavLink to="/pricing" className={navLinkClass}>
-          <svg className="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="12" y1="1" x2="12" y2="23" />
-            <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-          </svg>
-          <span>Тарифы</span>
-        </NavLink>
+        {/* Тарифы — только для админа и менеджера */}
+        {(user?.role === 'admin' || user?.role === 'manager') && (
+          <NavLink to="/pricing" className={navLinkClass}>
+            <svg className="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="12" y1="1" x2="12" y2="23" />
+              <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+            </svg>
+            <span>Тарифы</span>
+          </NavLink>
+        )}
 
-        <NavLink to="/users" className={navLinkClass}>
-          <svg className="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          <span>Пользователи</span>
-        </NavLink>
+        {/* Пользователи — только для админа */}
+        {user?.role === 'admin' && (
+          <NavLink to="/users" className={navLinkClass}>
+            <svg className="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <span>Пользователи</span>
+          </NavLink>
+        )}
       </nav>
 
       <div className="sidebar__footer">
