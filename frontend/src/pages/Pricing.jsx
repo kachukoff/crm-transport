@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
-import { useNavigate, Link } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
 
 function Pricing() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({
     vehicle_type: 'gazelle',
@@ -61,9 +63,11 @@ function Pricing() {
           <p className="page-header__subtitle">Настройка ценообразования по типам транспорта</p>
         </div>
         <div className="page-header__actions">
-          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-            + Добавить тариф
-          </button>
+          {user?.role === 'admin' && (
+            <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+              + Добавить тариф
+            </button>
+          )}
         </div>
       </div>
 

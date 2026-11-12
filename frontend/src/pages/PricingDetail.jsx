@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
@@ -8,6 +9,7 @@ import ErrorMessage from '../components/ErrorMessage';
 function PricingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const deletePricing = useMutation({
@@ -89,12 +91,16 @@ function PricingDetail() {
           <p className="page-header__subtitle">Настройка ценообразования</p>
         </div>
         <div className="page-header__actions" style={{ display: 'flex', gap: '10px' }}>
-          <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-            Редактировать
-          </button>
-          <button className="btn btn--danger" onClick={handleDelete}>
-            Удалить
-          </button>
+          {user?.role === 'admin' && (
+            <>
+              <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
+                Редактировать
+              </button>
+              <button className="btn btn--danger" onClick={handleDelete}>
+                Удалить
+              </button>
+            </>
+          )}
         </div>
       </div>
 
