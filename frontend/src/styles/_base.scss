@@ -1,10 +1,9 @@
 // ============================================
-// Reset + базовые стили
+//  Reset + база
 // ============================================
 
 @use "variables" as *;
 @use "mixins" as *;
-
 
 *,
 *::before,
@@ -16,28 +15,44 @@ html,
 body {
   margin: 0;
   padding: 0;
+  min-height: 100%;
+}
+
+html {
   height: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
+  min-height: 100vh;
   font-family: $font-family-base;
   font-size: $font-size-base;
   line-height: $line-height-base;
-  color: $color-text;
-  background-color: $color-bg;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(70rem 50rem at 8% -10%, var(--color-bg-glow-1), transparent 60%),
+    radial-gradient(60rem 40rem at 100% 0%, var(--color-bg-glow-2), transparent 55%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color $transition-base, color $transition-base;
+}
+
+#root {
+  min-height: 100vh;
 }
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
   font-weight: $font-weight-bold;
   line-height: $line-height-tight;
+  letter-spacing: -0.025em;
 }
 
-h1 { font-size: $font-size-2xl; letter-spacing: -0.02em; }
-h2 { font-size: $font-size-xl; letter-spacing: -0.02em; }
-h3 { font-size: $font-size-lg; letter-spacing: -0.01em; }
+h1 { font-size: $font-size-2xl; }
+h2 { font-size: $font-size-xl; }
+h3 { font-size: $font-size-lg; }
 h4 { font-size: $font-size-md; }
 
 p {
@@ -45,12 +60,12 @@ p {
 }
 
 a {
-  color: $color-primary;
+  color: var(--color-primary);
   text-decoration: none;
   transition: color $transition-fast;
 
   &:hover {
-    color: $color-primary-hover;
+    color: var(--color-primary-hover);
   }
 }
 
@@ -80,19 +95,50 @@ ol {
 
 table {
   border-collapse: collapse;
-  width: 100%;
 }
 
-// --- Фокус для клавиатурной навигации ---
+::selection {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+// --- Скроллбар ---
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-strong);
+  border: 2px solid transparent;
+  border-radius: $radius-full;
+  background-clip: padding-box;
+}
+
+// --- Фокус ---
 :focus-visible {
-  @include focus-ring;
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.btn--primary:focus-visible {
+  outline-color: var(--color-text);
 }
 
 // --- Утилиты ---
-.text-muted   { color: $color-text-muted; }
-.text-success { color: $color-success; }
-.text-warning { color: $color-warning; }
-.text-danger  { color: $color-danger; }
+.text-muted   { color: var(--color-text-muted); }
+.text-success { color: var(--color-success-text); }
+.text-warning { color: var(--color-warning-text); }
+.text-danger  { color: var(--color-danger-text); }
 .text-center  { text-align: center; }
 .text-right   { text-align: right; }
 
@@ -109,3 +155,65 @@ table {
 .d-none  { display: none; }
 .d-flex  { display: flex; }
 .d-block { display: block; }
+
+.sr-only {
+  @include visually-hidden;
+}
+
+// --- Появление страницы ---
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.content > * {
+  animation: rise-in $transition-slow both;
+}
+
+.content > *:nth-child(2) { animation-delay: 40ms; }
+.content > *:nth-child(3) { animation-delay: 80ms; }
+.content > *:nth-child(4) { animation-delay: 120ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--color-text);
+  -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset;
+  box-shadow: 0 0 0 1000px var(--color-surface) inset;
+  caret-color: var(--color-text);
+  transition: background-color 9999s ease-out 0s;
+}
+
+input:autofill {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+
+input:-moz-autofill {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  box-shadow: 0 0 0 1000px var(--color-surface) inset;
+  filter: none;
+}

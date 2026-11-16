@@ -1,0 +1,208 @@
+html:not(.theme-dark) {
+  --color-bg: #faf8ff;
+  --color-bg-glow-1: rgba(91, 75, 219, 0.05);
+  --color-bg-glow-2: rgba(14, 165, 233, 0.04);
+  --color-surface: #ffffff;
+  --color-surface-2: #ffffff;
+  --color-surface-hover: #f3edff;
+  --color-border: #e9e2ff;
+  --color-border-strong: #d7ccff;
+
+  --color-text: #16121f;
+  --color-text-muted: #5e4f7d;
+  --color-text-subtle: #8e7fae;
+
+  --color-primary: #5b4bdb;
+  --color-primary-strong: #4338ca;
+  --color-primary-hover: #4c3fd1;
+  --color-primary-soft: #eeebff;
+
+  --color-header-bg: rgba(255, 255, 255, 0.9);
+  --color-header-text: #16121f;
+  --color-header-muted: #5e4f7d;
+  --color-header-hover: #f3edff;
+  --color-header-border: #e9e2ff;
+  --color-header-field-bg: #ffffff;
+  --color-header-field-border: #ddd3ff;
+
+  --color-sidebar-bg: #fbf8ff;
+  --color-sidebar-text: #5e4f7d;
+  --color-sidebar-heading: #16121f;
+  --color-sidebar-hover: #f3edff;
+  --color-sidebar-border: #e9e2ff;
+  --color-sidebar-card-bg: transparent;
+  --color-sidebar-card-border: transparent;
+
+  --color-overlay: rgba(22, 18, 31, 0.35);
+
+  --badge-neutral-bg: #f2edff;
+  --badge-neutral-text: #4c3fd1;
+  --badge-info-bg: #e8f1ff;
+  --badge-info-text: #1d4ed8;
+  --badge-success-bg: #e7f7f2;
+  --badge-success-text: #0f766e;
+  --badge-warning-bg: #fff4e6;
+  --badge-warning-text: #9a3412;
+  --badge-danger-bg: #feeceb;
+  --badge-danger-text: #b42318;
+  --badge-primary-bg: #eeebff;
+  --badge-primary-text: #4c3fd1;
+
+  --metric-primary-icon-bg: #ffffff;
+  --metric-primary-icon-color: #4c3fd1;
+  --metric-primary-glow: transparent;
+
+  --shadow-sm: 0 1px 2px rgba(91, 75, 219, 0.04),
+    0 12px 30px -24px rgba(91, 75, 219, 0.18);
+  --shadow-md: 0 2px 6px rgba(91, 75, 219, 0.05),
+    0 24px 50px -32px rgba(91, 75, 219, 0.22);
+  --shadow-lg: 0 30px 80px -40px rgba(91, 75, 219, 0.25);
+  --shadow-primary: 0 12px 28px -14px rgba(91, 75, 219, 0.55);
+}
+
+html:not(.theme-dark) .sidebar__profile {
+  padding: 16px 2px;
+  margin-bottom: 0;
+  background: transparent !important;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+html:not(.theme-dark) .sidebar__profile-avatar,
+html:not(.theme-dark) .header__avatar {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-strong)
+  ) !important;
+  box-shadow: none;
+}
+
+html:not(.theme-dark) .table thead {
+  background: transparent !important;
+}
+
+html:not(.theme-dark) .table th {
+  border-bottom: 1px solid var(--color-border-strong);
+}
+
+html:not(.theme-dark) .table tbody tr:hover {
+  background: var(--color-surface-hover) !important;
+}
+
+html:not(.theme-dark) .select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path fill='%235e4f7d' d='M6 8L2 4h8z'/></svg>");
+}
+
+// --- Tinted metric cards (strong tint) ---
+html:not(.theme-dark) .card--metric {
+  background: var(--metric-bg) !important;
+  border: 1px solid var(--metric-border);
+  border-radius: 16px;
+  box-shadow: none;
+  padding: 20px 22px;
+}
+
+html:not(.theme-dark) .card--metric:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px -18px rgba(91, 75, 219, 0.35);
+}
+
+html:not(.theme-dark) .card--metric::after {
+  display: none;
+}
+
+html:not(.theme-dark) .card--metric .card__icon {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+html:not(.theme-dark) .card--metric .card__value {
+  color: #1a1425;
+}
+
+html:not(.theme-dark) .card--metric .card__label {
+  color: #4d4166;
+}
+
+html:not(.theme-dark) .card--accent-primary {
+  --metric-bg: #ded7ff;
+  --metric-border: #cec3ff;
+  --metric-icon-bg: #ffffff;
+  --metric-icon-color: #4c3fd1;
+}
+
+html:not(.theme-dark) .card--accent-success {
+  --metric-bg: #d3f3e8;
+  --metric-border: #bce9da;
+  --metric-icon-bg: #ffffff;
+  --metric-icon-color: #0f766e;
+}
+
+html:not(.theme-dark) .card--accent-warning {
+  --metric-bg: #ffe3bd;
+  --metric-border: #ffd49c;
+  --metric-icon-bg: #ffffff;
+  --metric-icon-color: #9a3412;
+}
+
+html:not(.theme-dark) .card--accent-info {
+  --metric-bg: #d6eaff;
+  --metric-border: #bcdcf8;
+  --metric-icon-bg: #ffffff;
+  --metric-icon-color: #0369a1;
+}
+
+// Более насыщенные карточки
+html:not(.theme-dark) .card--accent-primary {
+  --metric-bg: #d2c6ff;
+  --metric-border: #c1b2ff;
+}
+
+html:not(.theme-dark) .card--accent-success {
+  --metric-bg: #c4efe1;
+  --metric-border: #b0e4d3;
+}
+
+html:not(.theme-dark) .card--accent-warning {
+  --metric-bg: #ffd9a6;
+  --metric-border: #ffc888;
+}
+
+html:not(.theme-dark) .card--accent-info {
+  --metric-bg: #c7e3ff;
+  --metric-border: #b2d6fa;
+}
+
+// Более насыщенные бейджи
+html:not(.theme-dark) .badge--neutral {
+  background: #e9e2ff;
+  color: #4b3bb3;
+}
+
+html:not(.theme-dark) .badge--info {
+  background: #cfe4ff;
+  color: #1246a0;
+}
+
+html:not(.theme-dark) .badge--success {
+  background: #c9f0e2;
+  color: #0b5e50;
+}
+
+html:not(.theme-dark) .badge--warning {
+  background: #ffe2b8;
+  color: #7c3a0a;
+}
+
+html:not(.theme-dark) .badge--danger {
+  background: #ffd4d0;
+  color: #8f1d16;
+}
+
+html:not(.theme-dark) .badge--primary {
+  background: #ded4ff;
+  color: #3f2fb0;
+}
