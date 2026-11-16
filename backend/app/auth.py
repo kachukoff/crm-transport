@@ -22,4 +22,4 @@ async def get_user_id_by_token(token: str) -> int | None:
 
 async def delete_session(token: str):
   """ Удаляем сессию (выход из системы). """
-  await redis_client.delete(f"session{token}")
+  await redis_client.delete(f"session:{token}")
