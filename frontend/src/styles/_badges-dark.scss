@@ -1,0 +1,42 @@
+
+// Насыщенные бейджи для тёмной темы
+.theme-dark .badge {
+  border: 1px solid var(--badge-border, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.theme-dark .badge--neutral {
+  background: #2f3b4d;
+  color: #e2e8f0;
+  border-color: #44536b;
+}
+
+.theme-dark .badge--info {
+  background: #123c73;
+  color: #bfdbfe;
+  border-color: #1d4ed8;
+}
+
+.theme-dark .badge--success {
+  background: #0b4438;
+  color: #a7f3d0;
+  border-color: #0f766e;
+}
+
+.theme-dark .badge--warning {
+  background: #4a300d;
+  color: #fde68a;
+  border-color: #b45309;
+}
+
+.theme-dark .badge--danger {
+  background: #4a1a1f;
+  color: #fecaca;
+  border-color: #b91c1c;
+}
+
+.theme-dark .badge--primary {
+  background: #2a2360;
+  color: #ddd6fe;
+  border-color: #5b4bdb;
+}

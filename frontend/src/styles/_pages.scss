@@ -1,5 +1,5 @@
 // ============================================
-// Стили конкретных страниц
+//  Стили конкретных страниц
 // ============================================
 
 @use "variables" as *;
@@ -7,22 +7,63 @@
 
 // --- Login ---
 .login-page {
-  min-height: 100vh;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 100vh;
   padding: $space-6;
-  background-color: $color-bg;
+  overflow: hidden;
+  background-color: var(--color-bg);
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    width: 540px;
+    height: 540px;
+    pointer-events: none;
+    border-radius: $radius-full;
+    filter: blur(10px);
+  }
+
+  &::before {
+    top: -220px;
+    right: -160px;
+    background: radial-gradient(circle, var(--color-bg-glow-1), transparent 68%);
+  }
+
+  &::after {
+    bottom: -260px;
+    left: -180px;
+    background: radial-gradient(circle, var(--color-bg-glow-2), transparent 68%);
+  }
 }
 
 .login-card {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  max-width: 400px;
-  background-color: $color-surface;
-  border: 1px solid $color-border;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-md;
-  padding: $space-8;
+  max-width: 420px;
+  padding: $space-10;
+  overflow: hidden;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-xl;
+  box-shadow: var(--shadow-lg);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background-image: linear-gradient(
+      90deg,
+      var(--color-primary) 0%,
+      var(--color-info) 50%,
+      var(--color-success) 100%
+    );
+  }
 
   &__logo {
     display: flex;
@@ -32,34 +73,41 @@
     margin-bottom: $space-6;
     font-size: $font-size-lg;
     font-weight: $font-weight-bold;
-    color: $color-text;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
   }
 
   &__logo-mark {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    background-color: $color-primary;
-    color: $color-text-invert;
+    width: 38px;
+    height: 38px;
+    color: var(--color-primary-contrast);
+    background-image: linear-gradient(
+      135deg,
+      var(--color-primary) 0%,
+      var(--color-primary-strong) 100%
+    );
     border-radius: $radius-md;
-    font-weight: $font-weight-bold;
+    box-shadow: var(--shadow-primary);
     font-size: $font-size-md;
+    font-weight: $font-weight-bold;
   }
 
   &__title {
+    margin-bottom: $space-2;
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
     text-align: center;
-    margin-bottom: $space-2;
+    letter-spacing: -0.03em;
   }
 
   &__subtitle {
-    text-align: center;
-    font-size: $font-size-sm;
-    color: $color-text-muted;
     margin-bottom: $space-6;
+    font-size: $font-size-sm;
+    color: var(--color-text-muted);
+    text-align: center;
   }
 
   &__form {
@@ -68,12 +116,12 @@
   }
 
   &__footer {
-    margin-top: $space-6;
     padding-top: $space-5;
-    border-top: 1px solid $color-border;
-    text-align: center;
+    margin-top: $space-6;
     font-size: $font-size-sm;
-    color: $color-text-muted;
+    color: var(--color-text-muted);
+    text-align: center;
+    border-top: 1px solid var(--color-border);
 
     a {
       font-weight: $font-weight-medium;
@@ -83,12 +131,12 @@
 
 .login-page__copyright {
   position: absolute;
+  right: 0;
   bottom: $space-4;
   left: 0;
-  right: 0;
-  text-align: center;
   font-size: $font-size-xs;
-  color: $color-text-muted;
+  color: var(--color-text-muted);
+  text-align: center;
 }
 
 // --- Profile ---
@@ -113,29 +161,29 @@
     grid-template-columns: 160px 1fr;
     gap: $space-4;
     padding-bottom: $space-4;
-    border-bottom: 1px solid $color-border;
+    border-bottom: 1px solid var(--color-border);
 
     &:last-child {
-      border-bottom: none;
       padding-bottom: 0;
+      border-bottom: none;
     }
   }
 
   &__label {
     font-size: $font-size-sm;
-    color: $color-text-muted;
+    color: var(--color-text-muted);
   }
 
   &__value {
     font-size: $font-size-base;
-    color: $color-text;
-    font-weight: $font-weight-medium;
+    font-weight: 500;
+    color: var(--color-text);
   }
 
   &__actions {
-    margin-top: $space-6;
     padding-top: $space-5;
-    border-top: 1px solid $color-border;
+    margin-top: $space-6;
+    border-top: 1px solid var(--color-border);
   }
 }
 
@@ -143,11 +191,11 @@
 .order-request-page {
   min-height: 100vh;
   padding: $space-6 $space-4;
-  background-color: $color-bg;
+  background-color: var(--color-bg);
 }
 
 .order-request-container {
-  max-width: 720px;
+  max-width: 760px;
   margin: 0 auto;
 }
 
@@ -159,35 +207,41 @@
   margin-bottom: $space-6;
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $color-text;
+  color: var(--color-text);
 
   &__mark {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    background-color: $color-primary;
-    color: $color-text-invert;
+    width: 38px;
+    height: 38px;
+    color: var(--color-primary-contrast);
+    background-image: linear-gradient(
+      135deg,
+      var(--color-primary) 0%,
+      var(--color-primary-strong) 100%
+    );
     border-radius: $radius-md;
+    box-shadow: var(--shadow-primary);
     font-weight: $font-weight-bold;
   }
 }
 
 .order-request-title {
-  text-align: center;
   margin-bottom: $space-2;
+  text-align: center;
 
   &__heading {
+    margin-bottom: $space-2;
     font-size: $font-size-2xl;
     font-weight: $font-weight-bold;
-    margin-bottom: $space-2;
+    letter-spacing: -0.03em;
   }
 
   &__subtitle {
-    font-size: $font-size-base;
-    color: $color-text-muted;
     margin-bottom: $space-6;
+    font-size: $font-size-base;
+    color: var(--color-text-muted);
   }
 }
 
@@ -203,10 +257,10 @@
   }
 
   &__section-title {
+    padding-bottom: $space-2;
     font-size: $font-size-md;
     font-weight: $font-weight-bold;
-    padding-bottom: $space-2;
-    border-bottom: 1px solid $color-border;
+    border-bottom: 1px solid var(--color-border);
   }
 
   &__row {
@@ -228,40 +282,40 @@
 
   &__price-preview {
     padding: $space-4;
-    background-color: $color-primary-soft;
+    background-color: var(--color-primary-soft);
+    border-left: 3px solid var(--color-primary);
     border-radius: $radius-md;
-    border-left: 4px solid $color-primary;
 
     &-label {
-      font-size: $font-size-sm;
-      color: $color-text-muted;
       margin-bottom: $space-1;
+      font-size: $font-size-sm;
+      color: var(--color-text-muted);
     }
 
     &-value {
       font-size: $font-size-xl;
       font-weight: $font-weight-bold;
-      color: $color-primary;
+      color: var(--color-primary);
     }
 
     &-hint {
-      font-size: $font-size-xs;
-      color: $color-text-muted;
       margin-top: $space-1;
+      font-size: $font-size-xs;
+      color: var(--color-text-muted);
     }
   }
 
   &__footer {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: $space-4;
     padding-top: $space-5;
-    border-top: 1px solid $color-border;
+    border-top: 1px solid var(--color-border);
 
     &-link {
       font-size: $font-size-sm;
-      color: $color-text-muted;
+      color: var(--color-text-muted);
     }
   }
 }
@@ -269,7 +323,7 @@
 // --- Order Detail ---
 .order-detail {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: $space-6;
   align-items: start;
 
@@ -290,7 +344,7 @@
   }
 }
 
-// Информационные строки
+// --- Info list ---
 .info-list {
   display: flex;
   flex-direction: column;
@@ -300,7 +354,7 @@
     grid-template-columns: 180px 1fr;
     gap: $space-4;
     padding: $space-3 0;
-    border-bottom: 1px solid $color-border;
+    border-bottom: 1px solid var(--color-border);
 
     &:last-child {
       border-bottom: none;
@@ -309,16 +363,16 @@
 
   &__label {
     font-size: $font-size-sm;
-    color: $color-text-muted;
+    color: var(--color-text-muted);
   }
 
   &__value {
     font-size: $font-size-base;
-    color: $color-text;
+    color: var(--color-text);
   }
 }
 
-// Таймлайн статусов
+// --- Timeline ---
 .timeline {
   display: flex;
   flex-direction: column;
@@ -331,23 +385,24 @@
 
     &-dot {
       flex-shrink: 0;
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
+      margin-top: 5px;
+      background-color: var(--color-border-strong);
       border-radius: $radius-full;
-      margin-top: 4px;
-      background-color: $color-border;
     }
 
     &--active &-dot {
-      background-color: $color-primary;
+      background-color: var(--color-primary);
+      box-shadow: 0 0 0 4px var(--color-primary-soft);
     }
 
     &--success &-dot {
-      background-color: $color-success;
+      background-color: var(--color-success);
     }
 
     &--danger &-dot {
-      background-color: $color-danger;
+      background-color: var(--color-danger);
     }
 
     &-content {
@@ -356,26 +411,42 @@
   }
 
   &__time {
-    font-size: $font-size-xs;
-    color: $color-text-muted;
     margin-bottom: $space-1;
+    font-size: $font-size-xs;
+    color: var(--color-text-muted);
   }
 
   &__title {
+    margin-bottom: $space-1;
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $color-text;
-    margin-bottom: $space-1;
+    color: var(--color-text);
   }
 
   &__comment {
     font-size: $font-size-sm;
-    color: $color-text-muted;
+    color: var(--color-text-muted);
   }
 }
 
-// --- Order Detail: адаптация info-list в узкой колонке ---
 .order-detail__side {
+  .info-list__row {
+    grid-template-columns: 1fr;
+    gap: $space-1;
+  }
+}
+
+// --- Мобильные детали ---
+@media (max-width: 600px) {
+  .profile__row {
+    grid-template-columns: 1fr;
+    gap: $space-1;
+  }
+
+  .login-card {
+    padding: $space-6;
+  }
+
   .info-list__row {
     grid-template-columns: 1fr;
     gap: $space-1;

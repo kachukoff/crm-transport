@@ -1,10 +1,9 @@
 // ============================================
-// Миксины: переиспользуемые куски
+//  Миксины
 // ============================================
 
 @use "variables" as *;
 
-// --- Flexbox-хелперы ---
 @mixin flex($direction: row, $justify: flex-start, $align: stretch, $gap: 0) {
   display: flex;
   flex-direction: $direction;
@@ -21,7 +20,6 @@
   align-items: center;
 }
 
-// --- Обрезка текста ---
 @mixin truncate {
   overflow: hidden;
   white-space: nowrap;
@@ -35,75 +33,85 @@
   overflow: hidden;
 }
 
-// --- Карточка ---
 @mixin card {
-  background-color: $color-surface;
-  border: 1px solid $color-border;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: $radius-lg;
-  box-shadow: $shadow-sm;
+  box-shadow: var(--shadow-sm);
 }
 
-// --- Кнопка: базовые стили (общие для всех вариантов) ---
+@mixin glass {
+  background-color: var(--color-header-bg);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
 @mixin button-base {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: $space-2;
-  padding: $space-2 $space-4;
+  padding: 10px $space-4;
   font-family: inherit;
   font-size: $font-size-base;
-  font-weight: $font-weight-medium;
+  font-weight: 600;
   line-height: 1;
   border: 1px solid transparent;
   border-radius: $radius-md;
   cursor: pointer;
   transition: background-color $transition-fast,
               border-color $transition-fast,
-              color $transition-fast;
+              color $transition-fast,
+              box-shadow $transition-fast,
+              transform $transition-fast;
   user-select: none;
   white-space: nowrap;
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
+    transform: none !important;
   }
 }
 
-// --- Инпут: базовые стили ---
 @mixin input-base {
   width: 100%;
-  padding: $space-2 $space-3;
+  padding: 11px $space-4;
   font-family: inherit;
   font-size: $font-size-base;
-  color: $color-text;
-  background-color: $color-surface;
-  border: 1px solid $color-border-strong;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
   border-radius: $radius-md;
-  transition: border-color $transition-fast, box-shadow $transition-fast;
+  transition: border-color $transition-fast, box-shadow $transition-fast,
+              background-color $transition-fast;
 
   &::placeholder {
-    color: $color-text-muted;
+    color: var(--color-text-subtle);
+  }
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-text-subtle);
   }
 
   &:focus {
     outline: none;
-    border-color: $color-primary;
-    box-shadow: 0 0 0 3px $color-primary-soft;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px var(--color-primary-soft);
   }
 
   &:disabled {
-    background-color: $color-surface-alt;
+    background-color: var(--color-surface-2);
     cursor: not-allowed;
+    opacity: 0.7;
   }
 }
 
-// --- Фокус-обводка для доступности ---
 @mixin focus-ring {
-  outline: 2px solid $color-primary;
-  outline-offset: 2px;
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
 }
 
-// --- Скрытие визуально, но не для screen reader ---
 @mixin visually-hidden {
   position: absolute;
   width: 1px;
