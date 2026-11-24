@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
@@ -10,6 +11,7 @@ function UserDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: user, isLoading, error } = useQuery({
@@ -49,12 +51,12 @@ function UserDetail() {
       navigate('/users');
     },
     onError: (error) => {
-      alert(`Ошибка при удалении: ${error.message}`);
+      alert(t('userDetail.deleteError', { message: error.message }));
     },
   });
 
   const handleDelete = () => {
-    if (window.confirm('Вы уверены, что хотите удалить этого пользователя?')) {
+    if (window.confirm(t('userDetail.deleteConfirm'))) {
       deleteUser.mutate();
     }
   };
@@ -64,32 +66,26 @@ function UserDetail() {
     updateUser.mutate(formData);
   };
 
-  if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (isLoading) return <div style={{ padding: '20px' }}>{t('common.loading')}</div>;
   if (error) return <ErrorMessage message={error.message} />;
-  if (!user) return <div style={{ padding: '20px' }}>Пользователь не найден</div>;
-
-  const roleMap = {
-    admin: 'Администратор',
-    manager: 'Менеджер',
-    driver: 'Водитель',
-  };
+  if (!user) return <div style={{ padding: '20px' }}>{t('userDetail.notFound')}</div>;
 
   return (
     <>
       <div className="page-header">
         <div>
           <button className="btn btn--ghost btn--sm" onClick={() => navigate('/users')} style={{ marginBottom: '10px' }}>
-            ← Назад к пользователям
+            {t('userDetail.back')}
           </button>
           <h2 className="page-header__title">{user.full_name}</h2>
           <p className="page-header__subtitle">{user.email}</p>
         </div>
         <div className="page-header__actions" style={{ display: 'flex', gap: '10px' }}>
           <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-            Редактировать
+            {t('userDetail.edit')}
           </button>
           <button className="btn btn--danger" onClick={handleDelete}>
-            Удалить
+            {t('userDetail.delete')}
           </button>
         </div>
       </div>
@@ -97,44 +93,44 @@ function UserDetail() {
       <div className="card">
         <div className="profile__info">
           <div className="profile__row">
-            <div className="profile__label">Роль</div>
+            <div className="profile__label">{t('userDetail.role')}</div>
             <div className="profile__value">
               <span className={`badge ${user.role === 'admin' ? 'badge--danger' :
-                  user.role === 'manager' ? 'badge--primary' : 'badge--info'
+                user.role === 'manager' ? 'badge--primary' : 'badge--info'
                 }`}>
-                {roleMap[user.role] || user.role}
+                {t(`roles.${user.role}`, { defaultValue: user.role })}
               </span>
             </div>
           </div>
           <div className="profile__row">
-            <div className="profile__label">Статус</div>
+            <div className="profile__label">{t('userDetail.status')}</div>
             <div className="profile__value">
               <span className={`badge ${user.is_active ? 'badge--success' : 'badge--neutral'}`}>
-                {user.is_active ? 'Активен' : 'Заблокирован'}
+                {user.is_active ? t('statuses.user.active') : t('statuses.user.blocked')}
               </span>
             </div>
           </div>
           <div className="profile__row">
-            <div className="profile__label">Последний вход</div>
+            <div className="profile__label">{t('userDetail.lastLogin')}</div>
             <div className="profile__value">—</div>
           </div>
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Редактировать пользователя">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('userDetail.modalTitle')}>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-group__label">ФИО</label>
+            <label className="form-group__label">{t('userDetail.name')}</label>
             <input className="input" required value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })} />
           </div>
           <div className="form-group">
-            <label className="form-group__label">Роль</label>
+            <label className="form-group__label">{t('userDetail.role')}</label>
             <select className="select" value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value })}>
-              <option value="admin">Администратор</option>
-              <option value="manager">Менеджер</option>
-              <option value="driver">Водитель</option>
+              <option value="admin">{t('roles.admin')}</option>
+              <option value="manager">{t('roles.manager')}</option>
+              <option value="driver">{t('roles.driver')}</option>
             </select>
           </div>
           <div className="form-group">
@@ -144,13 +140,15 @@ function UserDetail() {
                 checked={formData.is_active}
                 onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
               />
-              Активен (можно входить в систему)
+              {t('userDetail.active')}
             </label>
           </div>
           <div className="form-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>Отмена</button>
+            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>
+              {t('common.cancel')}
+            </button>
             <button type="submit" className="btn btn--primary" disabled={updateUser.isPending}>
-              {updateUser.isPending ? 'Сохранение...' : 'Сохранить'}
+              {updateUser.isPending ? t('common.saving') : t('common.save')}
             </button>
           </div>
         </form>

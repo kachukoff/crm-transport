@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
+import { DRIVER_STATUSES, getDriverStatusBadge, getDriverStatusLabel } from '../lib/driverStatus';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -9,6 +11,7 @@ function DriverDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: driver, isLoading, error } = useQuery({
@@ -50,7 +53,7 @@ function DriverDetail() {
       navigate('/drivers');
     },
     onError: (error) => {
-      alert(`Ошибка при удалении: ${error.message}`);
+      alert(t('driverDetail.deleteError', { message: error.message }));
     },
   });
 
@@ -63,38 +66,32 @@ function DriverDetail() {
   };
 
   const handleDelete = () => {
-    if (window.confirm('Вы уверены, что хотите удалить этого водителя?')) {
+    if (window.confirm(t('driverDetail.deleteConfirm'))) {
       deleteDriver.mutate();
     }
   };
 
-  if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (isLoading) return <div style={{ padding: '20px' }}>{t('common.loading')}</div>;
   if (error) return <ErrorMessage message={error.message} />;
-  if (!driver) return <div style={{ padding: '20px' }}>Водитель не найден</div>;
-
-  const statusMap = {
-    available: 'Свободен',
-    on_route: 'В рейсе',
-    day_off: 'Выходной',
-    fired: 'Уволен',
-  };
+  
+  if (!driver) return <div style={{ padding: '20px' }}>{t('driverDetail.notFound')}</div>;
 
   return (
     <>
       <div className="page-header">
         <div>
           <button className="btn btn--ghost btn--sm" onClick={() => navigate('/drivers')} style={{ marginBottom: '10px' }}>
-            ← Назад к водителям
+            {t('driverDetail.back')}
           </button>
           <h2 className="page-header__title">{driver.full_name}</h2>
-          <p className="page-header__subtitle">{driver.phone || 'Телефон не указан'}</p>
+          <p className="page-header__subtitle">{driver.phone || t('driverDetail.phoneNotSpecified')}</p>
         </div>
         <div className="page-header__actions" style={{ display: 'flex', gap: '10px' }}>
           <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-            Редактировать
+            {t('driverDetail.edit')}
           </button>
           <button className="btn btn--danger" onClick={handleDelete}>
-            Удалить
+            {t('driverDetail.delete')}
           </button>
         </div>
       </div>
@@ -102,62 +99,60 @@ function DriverDetail() {
       <div className="card">
         <div className="profile__info">
           <div className="profile__row">
-            <div className="profile__label">Номер прав</div>
+            <div className="profile__label">{t('driverDetail.license')}</div>
             <div className="profile__value">{driver.license_number || '—'}</div>
           </div>
           <div className="profile__row">
-            <div className="profile__label">Статус</div>
+            <div className="profile__label">{t('driverDetail.status')}</div>
             <div className="profile__value">
-              <span className={`badge ${driver.status === 'available' ? 'badge--success' :
-                driver.status === 'on_route' ? 'badge--warning' :
-                  driver.status === 'day_off' ? 'badge--neutral' : 'badge--danger'
-                }`}>
-                {statusMap[driver.status] || driver.status}
-              </span>
+              <span className={`badge ${getDriverStatusBadge(driver.status)}`}>
+                {getDriverStatusLabel(t, driver.status)}
+               </span>
             </div>
           </div>
           <div className="profile__row">
-            <div className="profile__label">Машина</div>
-            <div className="profile__value">{driver.vehicle_plate || 'Не назначена'}</div>
+            <div className="profile__label">{t('driverDetail.vehicle')}</div>
+            <div className="profile__value">{driver.vehicle_plate || t('driverDetail.vehicleNotAssigned')}</div>
           </div>
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Редактировать водителя">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('driverDetail.modalTitle')}>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-group__label">ФИО</label>
+            <label className="form-group__label">{t('driverDetail.name')}</label>
             <input className="input" required value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })} />
           </div>
 
           <div className="form-group">
-            <label className="form-group__label">Телефон</label>
+            <label className="form-group__label">{t('driverDetail.phone')}</label>
             <input className="input" value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
           </div>
 
           <div className="form-group">
-            <label className="form-group__label">Номер прав</label>
+            <label className="form-group__label">{t('driverDetail.licenseField')}</label>
             <input className="input" value={formData.license_number}
               onChange={(e) => setFormData({ ...formData, license_number: e.target.value })} />
           </div>
 
           <div className="form-group">
-            <label className="form-group__label">Статус</label>
+            <label className="form-group__label">{t('driverDetail.status')}</label>
             <select className="select" value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
-              <option value="available">Свободен</option>
-              <option value="on_route">В рейсе</option>
-              <option value="day_off">Выходной</option>
-              <option value="fired">Уволен</option>
+              {DRIVER_STATUSES.map((status) => (
+                <option key={status} value={status}>{t(`statuses.driver.${status}`)}</option>
+              ))}
             </select>
           </div>
 
           <div className="form-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>Отмена</button>
+            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>
+              {t('common.cancel')}
+            </button>
             <button type="submit" className="btn btn--primary" disabled={updateDriver.isPending}>
-              {updateDriver.isPending ? 'Сохранение...' : 'Сохранить'}
+              {updateDriver.isPending ? t('common.saving') : t('common.save')}
             </button>
           </div>
         </form>

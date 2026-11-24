@@ -1,11 +1,20 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import ErrorMessage from '../components/ErrorMessage';
+import { formatCurrency, formatDate } from '../lib/format';
+import { getOrderStatusBadge, getOrderStatusLabel } from '../lib/orderStatus';
 
 function Dashboard() {
   const { user } = useAuth();
-  const [summary, setSummary] = useState({ active_orders: 0, available_vehicles: 0, active_drivers: 0, new_orders: 0 });
+  const { t, i18n } = useTranslation();
+  const [summary, setSummary] = useState({
+    active_orders: 0,
+    available_vehicles: 0,
+    active_drivers: 0,
+    new_orders: 0,
+  });
   const [recentOrders, setRecentOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,7 +28,7 @@ function Dashboard() {
 
     Promise.all([
       api.get('/dashboard/summary'),
-      api.get('/orders/')
+      api.get('/orders/'),
     ]).then(([summaryData, ordersData]) => {
       setSummary(summaryData);
       setRecentOrders(ordersData.slice(-5).reverse());
@@ -30,7 +39,7 @@ function Dashboard() {
     });
   }, [user]);
 
-  if (loading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (loading) return <div style={{ padding: '20px' }}>{t('common.loading')}</div>;
   if (error) return <ErrorMessage message={error} />;
 
   // Для водителя — упрощённый дашборд
@@ -39,15 +48,17 @@ function Dashboard() {
       <>
         <div className="page-header">
           <div>
-            <h2 className="page-header__title">Обзор</h2>
-            <p className="page-header__subtitle">Добро пожаловать, {user.full_name}</p>
+            <h2 className="page-header__title">{t('dashboard.title')}</h2>
+            <p className="page-header__subtitle">
+              {t('dashboard.welcome', { name: user.full_name })}
+            </p>
           </div>
         </div>
         <div className="card">
           <div className="card__header card__header--accent">
-            <h3 className="card__title">Ваши заказы</h3>
+            <h3 className="card__title">{t('dashboard.yourOrders')}</h3>
           </div>
-          <p>Перейдите в раздел «Заказы», чтобы увидеть свои рейсы.</p>
+          <p>{t('dashboard.driverHint')}</p>
         </div>
       </>
     );
@@ -64,7 +75,7 @@ function Dashboard() {
             </svg>
           </div>
           <div className="card__value">{summary.active_orders}</div>
-          <div className="card__label">Активные заказы</div>
+          <div className="card__label">{t('dashboard.metrics.activeOrders')}</div>
         </div>
 
         <div className="card card--metric card--accent-success">
@@ -77,7 +88,7 @@ function Dashboard() {
             </svg>
           </div>
           <div className="card__value">{summary.available_vehicles}</div>
-          <div className="card__label">Свободные машины</div>
+          <div className="card__label">{t('dashboard.metrics.availableVehicles')}</div>
         </div>
 
         <div className="card card--metric card--accent-warning">
@@ -88,7 +99,7 @@ function Dashboard() {
             </svg>
           </div>
           <div className="card__value">{summary.active_drivers}</div>
-          <div className="card__label">Водители на смене</div>
+          <div className="card__label">{t('dashboard.metrics.activeDrivers')}</div>
         </div>
 
         <div className="card card--metric card--accent-info">
@@ -99,34 +110,38 @@ function Dashboard() {
             </svg>
           </div>
           <div className="card__value">{summary.new_orders}</div>
-          <div className="card__label">Новые заявки</div>
+          <div className="card__label">{t('dashboard.metrics.newOrders')}</div>
         </div>
       </div>
 
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="card__header" style={{ padding: '20px 24px', marginBottom: 0, borderBottom: '1px solid #f3f4f6' }}>
           <div>
-            <h3 className="card__title">Последние заказы</h3>
-            <p className="card__subtitle">5 последних изменений</p>
+            <h3 className="card__title">{t('dashboard.recentOrders')}</h3>
+            <p className="card__subtitle">{t('dashboard.recentSubtitle')}</p>
           </div>
-          <a href="/orders" className="btn btn--ghost btn--secondary">Все заказы →</a>
+          <a href="/orders" className="btn btn--ghost btn--secondary">
+            {t('dashboard.allOrders')}
+          </a>
         </div>
 
         <div className="table-wrapper">
           <table className="table">
             <thead>
               <tr>
-                <th>№</th>
-                <th>Клиент</th>
-                <th>Маршрут</th>
-                <th>Статус</th>
-                <th>Цена</th>
-                <th>Дата</th>
+                <th>{t('dashboard.table.number')}</th>
+                <th>{t('dashboard.table.client')}</th>
+                <th>{t('dashboard.table.route')}</th>
+                <th>{t('dashboard.table.status')}</th>
+                <th>{t('dashboard.table.price')}</th>
+                <th>{t('dashboard.table.date')}</th>
               </tr>
             </thead>
             <tbody>
               {recentOrders.length === 0 ? (
-                <tr><td colSpan="6" className="table__empty">Нет данных</td></tr>
+                <tr>
+                  <td colSpan="6" className="table__empty">{t('common.noData')}</td>
+                </tr>
               ) : (
                 recentOrders.map(order => (
                   <tr key={order.id}>
@@ -134,22 +149,13 @@ function Dashboard() {
                     <td>{order.client?.name || '—'}</td>
                     <td>{order.route ? `${order.route.from_address} → ${order.route.to_address}` : '—'}</td>
                     <td>
-                      <span className={`badge ${order.status === 'new' ? 'badge--neutral' :
-                        order.status === 'assigned' ? 'badge--info' :
-                          order.status === 'in_progress' ? 'badge--warning' :
-                            order.status === 'delivered' ? 'badge--success' :
-                              order.status === 'completed' ? 'badge--primary' : 'badge--danger'
-                        }`}>
-                        {order.status === 'new' ? 'Новый' :
-                          order.status === 'assigned' ? 'Назначен' :
-                            order.status === 'in_progress' ? 'В пути' :
-                              order.status === 'delivered' ? 'Доставлен' :
-                                order.status === 'completed' ? 'Завершён' : 'Отменён'}
+                      <span className={`badge ${getOrderStatusBadge(order.status)}`}>
+                        {getOrderStatusLabel(t, order.status)}
                       </span>
                     </td>
-                    <td>{order.price ? `${order.price} ₽` : '—'}</td>
+                    <td>{order.price != null ? formatCurrency(order.price, i18n.language) : '—'}</td>
                     <td className="table__cell-muted">
-                      {new Date(order.created_at).toLocaleDateString('ru-RU')}
+                      {formatDate(order.created_at, i18n.language)}
                     </td>
                   </tr>
                 ))

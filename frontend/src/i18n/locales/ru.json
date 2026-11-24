@@ -1,0 +1,367 @@
+{
+  "common": {
+    "appName": "CRM Транспорт",
+    "loading": "Загрузка...",
+    "noData": "Нет данных",
+    "cancel": "Отмена",
+    "saving": "Сохранение...",
+    "create": "Создать",
+    "save": "Сохранить"
+  },
+  "header": {
+    "menu": "Меню",
+    "search": "Поиск...",
+    "settings": "Настройки",
+    "notifications": "Уведомления",
+    "themeToDark": "Включить тёмную тему",
+    "themeToLight": "Включить светлую тему",
+    "language": "Сменить язык",
+    "profile": "Профиль"
+  },
+  "roles": {
+    "admin": "Администратор",
+    "manager": "Менеджер",
+    "driver": "Водитель"
+  },
+  "sidebar": {
+    "dashboard": "Обзор",
+    "orders": "Заказы",
+    "clients": "Клиенты",
+    "drivers": "Водители",
+    "vehicles": "Машины",
+    "pricing": "Тарифы",
+    "users": "Пользователи",
+    "settings": "Настройки",
+    "logout": "Выйти",
+    "logoutConfirm": "Вы уверены, что хотите выйти?"
+  },
+  "auth": {
+    "title": "Вход в систему",
+    "subtitle": "Введите свои учётные данные",
+    "email": "Email",
+    "password": "Пароль",
+    "emailPlaceholder": "name@company.ru",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Войти",
+    "loginError": "Неверный email или пароль"
+  },
+  "statuses": {
+    "order": {
+      "new": "Новый",
+      "assigned": "Назначен",
+      "in_progress": "В пути",
+      "delivered": "Доставлен",
+      "completed": "Завершён",
+      "cancelled": "Отменён",
+      "unknown": "Неизвестно"
+    },
+    "driver": {
+      "available": "Свободен",
+      "on_route": "В рейсе",
+      "day_off": "Выходной",
+      "fired": "Уволен",
+      "unknown": "Неизвестно"
+    },
+    "vehicle": {
+      "available": "Свободна",
+      "on_route": "В рейсе",
+      "maintenance": "На ремонте",
+      "unknown": "Неизвестно"
+    },
+    "user": {
+      "active": "Активен",
+      "blocked": "Заблокирован",
+      "unknown": "Неизвестно"
+    }
+  },
+  "dashboard": {
+    "title": "Обзор",
+    "welcome": "Добро пожаловать, {{name}}",
+    "yourOrders": "Ваши заказы",
+    "driverHint": "Перейдите в раздел «Заказы», чтобы увидеть свои рейсы.",
+    "metrics": {
+      "activeOrders": "Активные заказы",
+      "availableVehicles": "Свободные машины",
+      "activeDrivers": "Водители на смене",
+      "newOrders": "Новые заявки"
+    },
+    "recentOrders": "Последние заказы",
+    "recentSubtitle": "5 последних изменений",
+    "allOrders": "Все заказы →",
+    "table": {
+      "number": "№",
+      "client": "Клиент",
+      "route": "Маршрут",
+      "status": "Статус",
+      "price": "Цена",
+      "date": "Дата"
+    }
+  },
+  "orders": {
+    "searchPlaceholder": "Поиск по номеру, клиенту или маршруту...",
+    "allStatuses": "Все статусы",
+    "statusOptions": {
+      "new": "Новые",
+      "assigned": "Назначенные",
+      "in_progress": "В пути",
+      "delivered": "Доставленные",
+      "completed": "Завершённые",
+      "cancelled": "Отменённые"
+    },
+    "allDrivers": "Все водители",
+    "create": "+ Создать заказ",
+    "table": {
+      "number": "№",
+      "client": "Клиент",
+      "route": "Маршрут",
+      "driver": "Водитель",
+      "vehicle": "Машина",
+      "status": "Статус",
+      "price": "Цена",
+      "date": "Дата"
+    },
+    "modal": {
+      "title": "Создать заказ",
+      "client": "Клиент",
+      "clientPlaceholder": "-- Выберите клиента --",
+      "route": "Маршрут",
+      "routePlaceholder": "-- Выберите маршрут --",
+      "cargo": "Название груза",
+      "weight": "Вес (кг)",
+      "price": "Цена (₽, опционально)",
+      "cancel": "Отмена",
+      "saving": "Сохранение...",
+      "create": "Создать"
+    }
+  },
+  "orderDetail": {
+    "back": "← Назад к заказам",
+    "orderTitle": "Заказ #{{id}}",
+    "created": "Создан: {{date}}",
+    "info": "Информация о заказе",
+    "client": "Клиент",
+    "route": "Маршрут",
+    "cargo": "Груз",
+    "cargoValue": "{{name}} ({{weight}} кг)",
+    "price": "Стоимость",
+    "priceNotCalculated": "Не рассчитана",
+    "driver": "Водитель",
+    "driverNotAssigned": "Не назначен",
+    "vehicle": "Машина",
+    "vehicleNotAssigned": "Не назначена",
+    "actions": "Действия",
+    "currentStatus": "Текущий статус",
+    "updating": "Обновление...",
+    "changeAssignment": "Изменить назначение",
+    "assignDriver": "Назначить водителя",
+    "cancelOrder": "Отменить заказ",
+    "deleteOrder": "Удалить заказ",
+    "deleting": "Удаление...",
+    "assignTitle": "Назначить водителя и машину",
+    "driverPlaceholder": "-- Выберите водителя --",
+    "vehiclePlaceholder": "-- Выберите машину --",
+    "assign": "Назначить",
+    "confirmCancel": "Вы уверены, что хотите отменить заказ?",
+    "confirmDelete": "Вы уверены, что хотите удалить этот заказ?",
+    "statusChangeError": "Ошибка при смене статуса: {{message}}",
+    "deleteError": "Ошибка при удалении: {{message}}",
+    "notFound": "Заказ не найден"
+  },
+  "clientTypes": {
+    "legal": "Юридическое лицо",
+    "individual": "Физическое лицо",
+    "legalShort": "Юрлицо",
+    "individualShort": "Физлицо"
+  },
+  "clients": {
+    "searchPlaceholder": "Поиск по названию или ИНН...",
+    "allTypes": "Все типы",
+    "legalPlural": "Юридические лица",
+    "individualPlural": "Физические лица",
+    "add": "+ Добавить клиента",
+    "table": {
+      "name": "Название",
+      "type": "Тип",
+      "inn": "ИНН",
+      "contact": "Контактное лицо",
+      "phone": "Телефон"
+    },
+    "modal": {
+      "title": "Добавить клиента",
+      "type": "Тип клиента",
+      "name": "Название / ФИО",
+      "inn": "ИНН (опционально)",
+      "contact": "Контактное лицо",
+      "phone": "Телефон",
+      "email": "Email"
+    }
+  },
+  "clientDetail": {
+    "back": "← Назад к клиентам",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "inn": "ИНН",
+    "contact": "Контактное лицо",
+    "phone": "Телефон",
+    "email": "Email",
+    "address": "Адрес",
+    "modalTitle": "Редактировать клиента",
+    "type": "Тип клиента",
+    "name": "Название / ФИО",
+    "deleteConfirm": "Вы уверены, что хотите удалить этого клиента?",
+    "deleteError": "Ошибка при удалении: {{message}}",
+    "notFound": "Клиент не найден"
+  },
+  "drivers": {
+    "searchPlaceholder": "Поиск по ФИО или телефону...",
+    "allStatuses": "Все статусы",
+    "add": "+ Добавить водителя",
+    "table": {
+      "name": "ФИО",
+      "phone": "Телефон",
+      "license": "Права",
+      "status": "Статус",
+      "vehicle": "Машина"
+    },
+    "modal": {
+      "title": "Добавить водителя",
+      "name": "ФИО",
+      "phone": "Телефон",
+      "license": "Номер прав"
+    }
+  },
+  "driverDetail": {
+    "back": "← Назад к водителям",
+    "phoneNotSpecified": "Телефон не указан",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "license": "Номер прав",
+    "status": "Статус",
+    "vehicle": "Машина",
+    "vehicleNotAssigned": "Не назначена",
+    "modalTitle": "Редактировать водителя",
+    "name": "ФИО",
+    "phone": "Телефон",
+    "licenseField": "Номер прав",
+    "deleteConfirm": "Вы уверены, что хотите удалить этого водителя?",
+    "deleteError": "Ошибка при удалении: {{message}}",
+    "notFound": "Водитель не найден"
+  },
+  "vehicleTypes": {
+    "gazelle": "Газель",
+    "medium": "Средняя",
+    "truck": "Фура",
+    "refrigerator": "Рефрижератор",
+    "unknown": "Неизвестно"
+  },
+  "vehicles": {
+    "searchPlaceholder": "Поиск по госномеру или марке...",
+    "allStatuses": "Все статусы",
+    "add": "+ Добавить машину",
+    "capacityValue": "{{value}} кг",
+    "table": {
+      "plate": "Госномер",
+      "brandModel": "Марка / Модель",
+      "type": "Тип",
+      "capacity": "Грузоподъёмность",
+      "status": "Статус"
+    },
+    "modal": {
+      "title": "Добавить машину",
+      "plate": "Госномер",
+      "platePlaceholder": "А123ВС 77",
+      "brand": "Марка",
+      "brandPlaceholder": "ГАЗ",
+      "model": "Модель",
+      "modelPlaceholder": "Газель Next",
+      "type": "Тип машины",
+      "capacity": "Грузоподъёмность (кг)",
+      "capacityPlaceholder": "1500"
+    }
+  },
+  "vehicleDetail": {
+    "back": "← Назад к машинам",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "type": "Тип машины",
+    "capacity": "Грузоподъёмность",
+    "status": "Статус",
+    "modalTitle": "Редактировать машину",
+    "plate": "Госномер",
+    "brand": "Марка",
+    "model": "Модель",
+    "typeField": "Тип машины",
+    "capacityField": "Грузоподъёмность (кг)",
+    "deleteConfirm": "Вы уверены, что хотите удалить эту машину?",
+    "deleteError": "Ошибка при удалении: {{message}}",
+    "notFound": "Машина не найдена"
+  },
+  "pricing": {
+    "searchPlaceholder": "Поиск по типу транспорта...",
+    "allTypes": "Все типы",
+    "add": "+ Добавить тариф",
+    "table": {
+      "vehicleType": "Тип транспорта",
+      "baseRate": "Базовая ставка",
+      "perKm": "За км",
+      "perKg": "За кг"
+    },
+    "modal": {
+      "title": "Добавить тариф",
+      "vehicleType": "Тип транспорта",
+      "baseRate": "Базовая ставка (₽)",
+      "perKm": "Цена за км (₽)",
+      "perKg": "Цена за кг (₽)"
+    }
+  },
+  "pricingDetail": {
+    "back": "← Назад к тарифам",
+    "subtitle": "Настройка ценообразования",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "baseRate": "Базовая ставка",
+    "perKm": "Цена за км",
+    "perKg": "Цена за кг",
+    "modalTitle": "Редактировать тариф",
+    "vehicleType": "Тип транспорта",
+    "baseRateField": "Базовая ставка (₽)",
+    "perKmField": "Цена за км (₽)",
+    "perKgField": "Цена за кг (₽)",
+    "deleteConfirm": "Вы уверены, что хотите удалить этот тариф?",
+    "deleteError": "Ошибка при удалении: {{message}}",
+    "notFound": "Тариф не найден"
+  },
+  "users": {
+    "searchPlaceholder": "Поиск по ФИО или email...",
+    "allRoles": "Все роли",
+    "add": "+ Добавить пользователя",
+    "table": {
+      "name": "ФИО",
+      "email": "Email",
+      "role": "Роль",
+      "status": "Статус"
+    },
+    "modal": {
+      "title": "Добавить пользователя",
+      "name": "ФИО",
+      "email": "Email",
+      "password": "Пароль",
+      "role": "Роль"
+    },
+    "createError": "Ошибка при создании: {{message}}"
+  },
+  "userDetail": {
+    "back": "← Назад к пользователям",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "role": "Роль",
+    "status": "Статус",
+    "lastLogin": "Последний вход",
+    "modalTitle": "Редактировать пользователя",
+    "name": "ФИО",
+    "active": "Активен (можно входить в систему)",
+    "deleteConfirm": "Вы уверены, что хотите удалить этого пользователя?",
+    "deleteError": "Ошибка при удалении: {{message}}",
+    "notFound": "Пользователь не найден"
+  }
+}

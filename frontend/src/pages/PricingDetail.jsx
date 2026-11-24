@@ -1,22 +1,29 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
+import { formatCurrency } from '../lib/format';
+import { VEHICLE_TYPES, getVehicleTypeLabel } from '../lib/vehicle';
 
 function PricingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { t, i18n } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const deletePricing = useMutation({
     mutationFn: () => api.delete(`/pricing/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pricing'] });
       navigate('/pricing');
+    },
+    onError: (error) => {
+      alert(t('pricingDetail.deleteError', { message: error.message }));
     },
   });
 
@@ -64,40 +71,33 @@ function PricingDetail() {
   };
 
   const handleDelete = () => {
-    if (window.confirm('Вы уверены, что хотите удалить этот тариф?')) {
-      deletePricing.mutate();
-    }
+    if (window.confirm(t('pricingDetail.deleteConfirm'))) {
+       deletePricing.mutate();
+     }
   };
 
   if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
   if (error) return <ErrorMessage message={error.message} />;
-  if (!pricing) return <div style={{ padding: '20px' }}>Тариф не найден</div>;
-
-  const typeMap = {
-    gazelle: 'Газель',
-    medium: 'Средняя',
-    truck: 'Фура',
-    refrigerator: 'Рефрижератор',
-  };
+  if (!pricing) return <div style={{ padding: '20px' }}>{t('pricingDetail.notFound')}</div>;
 
   return (
     <>
       <div className="page-header">
         <div>
           <button className="btn btn--ghost btn--sm" onClick={() => navigate('/pricing')} style={{ marginBottom: '10px' }}>
-            ← Назад к тарифам
+            {t('pricingDetail.back')}
           </button>
-          <h2 className="page-header__title">{typeMap[pricing.vehicle_type] || pricing.vehicle_type}</h2>
-          <p className="page-header__subtitle">Настройка ценообразования</p>
+          <h2 className="page-header__title">{getVehicleTypeLabel(t, pricing.vehicle_type)}</h2>
+          <p className="page-header__subtitle">{t('pricingDetail.subtitle')}</p>
         </div>
         <div className="page-header__actions" style={{ display: 'flex', gap: '10px' }}>
           {user?.role === 'admin' && (
             <>
               <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-                Редактировать
+                {t('pricingDetail.edit')}
               </button>
               <button className="btn btn--danger" onClick={handleDelete}>
-                Удалить
+                {t('pricingDetail.delete')}
               </button>
             </>
           )}
@@ -107,51 +107,50 @@ function PricingDetail() {
       <div className="card">
         <div className="profile__info">
           <div className="profile__row">
-            <div className="profile__label">Базовая ставка</div>
-            <div className="profile__value">{pricing.base_rate} ₽</div>
+            <div className="profile__label">{t('pricingDetail.baseRate')}</div>
+            <div className="profile__value">{formatCurrency(pricing.base_rate, i18n.language, { maximumFractionDigits: 2 })}</div>
           </div>
           <div className="profile__row">
-            <div className="profile__label">Цена за км</div>
-            <div className="profile__value">{pricing.price_per_km} ₽</div>
+            <div className="profile__label">{t('pricingDetail.perKm')}</div>
+            <div className="profile__value">{formatCurrency(pricing.price_per_km, i18n.language, { maximumFractionDigits: 2 })}</div>
           </div>
           <div className="profile__row">
-            <div className="profile__label">Цена за кг</div>
-            <div className="profile__value">{pricing.price_per_kg} ₽</div>
+            <div className="profile__label">{t('pricingDetail.perKg')}</div>
+            <div className="profile__value">{formatCurrency(pricing.price_per_kg, i18n.language, { maximumFractionDigits: 2 })}</div>
           </div>
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Редактировать тариф">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('pricingDetail.modalTitle')}>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-group__label">Тип транспорта</label>
+            <label className="form-group__label">{t('pricingDetail.vehicleType')}</label>
             <select className="select" value={formData.vehicle_type}
               onChange={(e) => setFormData({ ...formData, vehicle_type: e.target.value })}>
-              <option value="gazelle">Газель</option>
-              <option value="medium">Средняя</option>
-              <option value="truck">Фура</option>
-              <option value="refrigerator">Рефрижератор</option>
+              {VEHICLE_TYPES.map((type) => (
+                <option key={type} value={type}>{t(`vehicleTypes.${type}`)}</option>
+              ))}
             </select>
           </div>
           <div className="form-group">
-            <label className="form-group__label">Базовая ставка (₽)</label>
+            <label className="form-group__label">{t('pricingDetail.baseRateField')}</label>
             <input className="input" type="number" step="0.01" required value={formData.base_rate}
               onChange={(e) => setFormData({ ...formData, base_rate: e.target.value })} />
           </div>
           <div className="form-group">
-            <label className="form-group__label">Цена за км (₽)</label>
+            <label className="form-group__label">{t('pricingDetail.perKmField')}</label>
             <input className="input" type="number" step="0.01" required value={formData.price_per_km}
               onChange={(e) => setFormData({ ...formData, price_per_km: e.target.value })} />
           </div>
           <div className="form-group">
-            <label className="form-group__label">Цена за кг (₽)</label>
+            <label className="form-group__label">{t('pricingDetail.perKgField')}</label>
             <input className="input" type="number" step="0.01" required value={formData.price_per_kg}
               onChange={(e) => setFormData({ ...formData, price_per_kg: e.target.value })} />
           </div>
           <div className="form-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>Отмена</button>
+            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>{t('common.cancel')}</button>
             <button type="submit" className="btn btn--primary" disabled={updatePricing.isPending}>
-              {updatePricing.isPending ? 'Сохранение...' : 'Сохранить'}
+              {updatePricing.isPending ? t('common.saving') : t('common.save')}
             </button>
           </div>
         </form>
