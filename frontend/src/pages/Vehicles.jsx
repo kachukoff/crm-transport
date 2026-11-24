@@ -4,12 +4,17 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import { formatNumber } from '../lib/format';
+import { VEHICLE_TYPES, getVehicleStatusBadge, getVehicleStatusLabel, getVehicleTypeLabel } from '../lib/vehicle';
+import { localizeVehicleBrand, localizeVehicleModel } from '../lib/vehicleNames';
 
 function Vehicles() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t, i18n } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -45,30 +50,24 @@ function Vehicles() {
     createVehicle.mutate(cleanData);
   };
 
-  if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (isLoading) return <div style={{ padding: '20px' }}>{t('common.loading')}</div>;
   if (error) return <ErrorMessage message={error.message} />;
-
-  const typeMap = {
-    gazelle: 'Газель',
-    medium: 'Средняя',
-    truck: 'Фура',
-    refrigerator: 'Рефрижератор',
-  };
 
   return (
     <>
       <div className="toolbar">
-        <input className="input toolbar__search" type="search" placeholder="Поиск по госномеру или марке..." />
-        <select className="select select--auto">
-          <option value="">Все статусы</option>
-          <option value="available">Свободна</option>
-          <option value="on_route">В рейсе</option>
-          <option value="maintenance">На ремонте</option>
+        <input className="input toolbar__search" type="search" placeholder={t('vehicles.searchPlaceholder')}
+          aria-label={t('vehicles.searchPlaceholder')} />
+        <select className="select select--auto" aria-label={t('vehicles.allStatuses')}>
+          <option value="">{t('vehicles.allStatuses')}</option>
+          <option value="available">{t('statuses.vehicle.available')}</option>
+          <option value="on_route">{t('statuses.vehicle.on_route')}</option>
+          <option value="maintenance">{t('statuses.vehicle.maintenance')}</option>
         </select>
         <div className="toolbar__spacer" />
         {user?.role !== 'driver' && (
           <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-            + Добавить машину
+            {t('vehicles.add')}
           </button>
         )}
       </div>
@@ -77,17 +76,17 @@ function Vehicles() {
         <table className="table">
           <thead>
             <tr>
-              <th>Госномер</th>
-              <th>Марка / Модель</th>
-              <th>Тип</th>
-              <th>Грузоподъёмность</th>
-              <th>Статус</th>
+              <th>{t('vehicles.table.plate')}</th>
+              <th>{t('vehicles.table.brandModel')}</th>
+              <th>{t('vehicles.table.type')}</th>
+              <th>{t('vehicles.table.capacity')}</th>
+              <th>{t('vehicles.table.status')}</th>
             </tr>
           </thead>
           <tbody>
             {vehicles.length === 0 ? (
               <tr>
-                <td colSpan="5" className="table__empty">Нет данных</td>
+                <td colSpan="5" className="table__empty">{t('common.noData')}</td>
               </tr>
             ) : (
               vehicles.map(vehicle => (
@@ -97,15 +96,13 @@ function Vehicles() {
                   style={{ cursor: 'pointer' }}
                 >
                   <td><strong>{vehicle.plate_number}</strong></td>
-                  <td>{vehicle.brand} {vehicle.model}</td>
-                  <td className="table__cell-muted">{typeMap[vehicle.vehicle_type] || vehicle.vehicle_type}</td>
-                  <td>{vehicle.capacity_kg ? `${vehicle.capacity_kg} кг` : '—'}</td>
+                  <td>{localizeVehicleBrand(vehicle.brand, i18n.language)} 
+                    {localizeVehicleModel(vehicle.model, i18n.language)}</td>
+                  <td className="table__cell-muted">{getVehicleTypeLabel(t, vehicle.vehicle_type)}</td>
+                  <td>{vehicle.capacity_kg ? t('vehicles.capacityValue', { value: formatNumber(vehicle.capacity_kg, i18n.language) }) : '—'}</td>
                   <td>
-                    <span className={`badge ${vehicle.status === 'available' ? 'badge--success' :
-                      vehicle.status === 'on_route' ? 'badge--warning' : 'badge--danger'
-                      }`}>
-                      {vehicle.status === 'available' ? 'Свободна' :
-                        vehicle.status === 'on_route' ? 'В рейсе' : 'На ремонте'}
+                    <span className={`badge ${getVehicleStatusBadge(vehicle.status)}`}>
+                      {getVehicleStatusLabel(t, vehicle.status)}
                     </span>
                   </td>
                 </tr>
@@ -115,59 +112,58 @@ function Vehicles() {
         </table>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Добавить машину">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('vehicles.modal.title')}>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-group__label">Госномер</label>
+            <label className="form-group__label">{t('vehicles.modal.plate')}</label>
             <input
               className="input"
               required
-              placeholder="А123ВС 77"
+              placeholder={t('vehicles.modal.platePlaceholder')}
               value={formData.plate_number}
               onChange={(e) => setFormData({ ...formData, plate_number: e.target.value })}
             />
           </div>
 
           <div className="form-group">
-            <label className="form-group__label">Марка</label>
+            <label className="form-group__label">{t('vehicles.modal.brand')}</label>
             <input
               className="input"
-              placeholder="ГАЗ"
+              placeholder={t('vehicles.modal.brandPlaceholder')}
               value={formData.brand}
               onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
             />
           </div>
 
           <div className="form-group">
-            <label className="form-group__label">Модель</label>
+            <label className="form-group__label">{t('vehicles.modal.model')}</label>
             <input
               className="input"
-              placeholder="Газель Next"
+              placeholder={t('vehicles.modal.modelPlaceholder')}
               value={formData.model}
               onChange={(e) => setFormData({ ...formData, model: e.target.value })}
             />
           </div>
 
           <div className="form-group">
-            <label className="form-group__label">Тип машины</label>
+            <label className="form-group__label">{t('vehicles.modal.type')}</label>
             <select
               className="select"
               value={formData.vehicle_type}
               onChange={(e) => setFormData({ ...formData, vehicle_type: e.target.value })}
             >
-              <option value="gazelle">Газель</option>
-              <option value="medium">Средняя</option>
-              <option value="truck">Фура</option>
-              <option value="refrigerator">Рефрижератор</option>
+              {VEHICLE_TYPES.map((type) => (
+                <option key={type} value={type}>{t(`vehicleTypes.${type}`)}</option>
+              ))}
             </select>
           </div>
 
           <div className="form-group">
-            <label className="form-group__label">Грузоподъёмность (кг)</label>
+            <label className="form-group__label">{t('vehicles.modal.capacity')}</label>
             <input
               className="input"
               type="number"
-              placeholder="1500"
+              pplaceholder={t('vehicles.modal.capacityPlaceholder')}
               value={formData.capacity_kg}
               onChange={(e) => setFormData({ ...formData, capacity_kg: e.target.value })}
             />
@@ -175,10 +171,10 @@ function Vehicles() {
 
           <div className="form-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
             <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>
-              Отмена
+              {t('common.cancel')}
             </button>
             <button type="submit" className="btn btn--primary" disabled={createVehicle.isPending}>
-              {createVehicle.isPending ? 'Сохранение...' : 'Создать'}
+              {createVehicle.isPending ? t('common.saving') : t('common.create')}
             </button>
           </div>
         </form>

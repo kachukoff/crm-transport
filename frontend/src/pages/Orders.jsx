@@ -1,15 +1,23 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
+import { formatCurrency, formatDate } from '../lib/format';
+import {
+  ORDER_STATUSES,
+  getOrderStatusBadge,
+  getOrderStatusLabel,
+} from '../lib/orderStatus';
 
 function Orders() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t, i18n } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -61,41 +69,40 @@ function Orders() {
     });
   };
 
-  if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (isLoading) return <div style={{ padding: '20px' }}>{t('common.loading')}</div>;
   if (error) return <ErrorMessage message={error.message} />;
-
-  const statusMap = {
-    new: 'Новый', assigned: 'Назначен', in_progress: 'В пути',
-    delivered: 'Доставлен', completed: 'Завершён', cancelled: 'Отменён',
-  };
 
   return (
     <>
       <div className="toolbar">
-        <input className="input toolbar__search" type="search" placeholder="Поиск по номеру, клиенту или маршруту..." />
-        
-        <select className="select select--auto">
-          <option value="">Все статусы</option>
-          <option value="new">Новые</option>
-          <option value="assigned">Назначенные</option>
-          <option value="in_progress">В пути</option>
-          <option value="delivered">Доставленные</option>
-          <option value="completed">Завершённые</option>
-          <option value="cancelled">Отменённые</option>
+        <input
+          className="input toolbar__search"
+          type="search"
+          placeholder={t('orders.searchPlaceholder')}
+          aria-label={t('orders.searchPlaceholder')}
+        />
+
+        <select className="select select--auto" aria-label={t('orders.allStatuses')}>
+          <option value="">{t('orders.allStatuses')}</option>
+          {ORDER_STATUSES.map(status => (
+            <option key={status} value={status}>
+              {t(`orders.statusOptions.${status}`)}
+            </option>
+          ))}
         </select>
 
-        <select className="select select--auto">
-          <option value="">Все водители</option>
+        <select className="select select--auto" aria-label={t('orders.allDrivers')}>
+          <option value="">{t('orders.allDrivers')}</option>
           {drivers.map(d => (
             <option key={d.id} value={d.id}>{d.full_name}</option>
           ))}
         </select>
-        
+
         <div className="toolbar__spacer" />
-        
+
         {user?.role !== 'driver' && (
           <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-            + Создать заказ
+            {t('orders.create')}
           </button>
         )}
       </div>
@@ -104,22 +111,24 @@ function Orders() {
         <table className="table">
           <thead>
             <tr>
-              <th>№</th>
-              <th>Клиент</th>
-              <th>Маршрут</th>
-              <th>Водитель</th>
-              <th>Машина</th>
-              <th>Статус</th>
-              <th>Цена</th>
-              <th>Дата</th>
+              <th>{t('orders.table.number')}</th>
+              <th>{t('orders.table.client')}</th>
+              <th>{t('orders.table.route')}</th>
+              <th>{t('orders.table.driver')}</th>
+              <th>{t('orders.table.vehicle')}</th>
+              <th>{t('orders.table.status')}</th>
+              <th>{t('orders.table.price')}</th>
+              <th>{t('orders.table.date')}</th>
             </tr>
           </thead>
           <tbody>
             {orders.length === 0 ? (
-              <tr><td colSpan="8" className="table__empty">Нет данных</td></tr>
+              <tr>
+                <td colSpan="8" className="table__empty">{t('common.noData')}</td>
+              </tr>
             ) : (
               orders.map(order => (
-                <tr 
+                <tr
                   key={order.id}
                   onClick={() => navigate(`/orders/${order.id}`)}
                   style={{ cursor: 'pointer' }}
@@ -130,19 +139,13 @@ function Orders() {
                   <td>{order.driver?.full_name || '—'}</td>
                   <td className="table__cell-muted">{order.vehicle?.plate_number || '—'}</td>
                   <td>
-                    <span className={`badge ${
-                      order.status === 'new' ? 'badge--neutral' :
-                      order.status === 'assigned' ? 'badge--info' :
-                      order.status === 'in_progress' ? 'badge--warning' :
-                      order.status === 'delivered' ? 'badge--success' :
-                      order.status === 'completed' ? 'badge--primary' : 'badge--danger'
-                    }`}>
-                      {statusMap[order.status]}
+                    <span className={`badge ${getOrderStatusBadge(order.status)}`}>
+                      {getOrderStatusLabel(t, order.status)}
                     </span>
                   </td>
-                  <td>{order.price ? `${order.price} ₽` : '—'}</td>
+                  <td>{order.price != null ? formatCurrency(order.price, i18n.language) : '—'}</td>
                   <td className="table__cell-muted">
-                    {new Date(order.created_at.slice(0, 23)).toLocaleDateString('ru-RU')}
+                    {formatDate(order.created_at, i18n.language)}
                   </td>
                 </tr>
               ))
@@ -151,48 +154,81 @@ function Orders() {
         </table>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Создать заказ">
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={t('orders.modal.title')}
+      >
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-group__label">Клиент</label>
-            <select className="select" required value={formData.client_id}
-              onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}>
-              <option value="">-- Выберите клиента --</option>
+            <label className="form-group__label">{t('orders.modal.client')}</label>
+            <select
+              className="select"
+              required
+              value={formData.client_id}
+              onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
+            >
+              <option value="">{t('orders.modal.clientPlaceholder')}</option>
               {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
 
           <div className="form-group">
-            <label className="form-group__label">Маршрут</label>
-            <select className="select" required value={formData.route_id}
-              onChange={(e) => setFormData({ ...formData, route_id: e.target.value })}>
-              <option value="">-- Выберите маршрут --</option>
-              {routes.map(r => <option key={r.id} value={r.id}>{r.from_address} → {r.to_address}</option>)}
+            <label className="form-group__label">{t('orders.modal.route')}</label>
+            <select
+              className="select"
+              required
+              value={formData.route_id}
+              onChange={(e) => setFormData({ ...formData, route_id: e.target.value })}
+            >
+              <option value="">{t('orders.modal.routePlaceholder')}</option>
+              {routes.map(r => (
+                <option key={r.id} value={r.id}>{r.from_address} → {r.to_address}</option>
+              ))}
             </select>
           </div>
 
           <div className="form-group">
-            <label className="form-group__label">Название груза</label>
-            <input className="input" required value={formData.cargo_name}
-              onChange={(e) => setFormData({ ...formData, cargo_name: e.target.value })} />
+            <label className="form-group__label">{t('orders.modal.cargo')}</label>
+            <input
+              className="input"
+              required
+              value={formData.cargo_name}
+              onChange={(e) => setFormData({ ...formData, cargo_name: e.target.value })}
+            />
           </div>
 
           <div className="form-group">
-            <label className="form-group__label">Вес (кг)</label>
-            <input className="input" type="number" required value={formData.weight_kg}
-              onChange={(e) => setFormData({ ...formData, weight_kg: e.target.value })} />
+            <label className="form-group__label">{t('orders.modal.weight')}</label>
+            <input
+              className="input"
+              type="number"
+              required
+              value={formData.weight_kg}
+              onChange={(e) => setFormData({ ...formData, weight_kg: e.target.value })}
+            />
           </div>
 
           <div className="form-group">
-            <label className="form-group__label">Цена (₽, опционально)</label>
-            <input className="input" type="number" value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
+            <label className="form-group__label">{t('orders.modal.price')}</label>
+            <input
+              className="input"
+              type="number"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+            />
           </div>
 
           <div className="form-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>Отмена</button>
+            <button
+              type="button"
+              className="btn btn--secondary"
+              onClick={() => setIsModalOpen(false)}
+            >
+              {t('orders.modal.cancel')}
+            </button>
             <button type="submit" className="btn btn--primary" disabled={createOrder.isPending}>
-              {createOrder.isPending ? 'Сохранение...' : 'Создать'}
+              {createOrder.isPending ? t('orders.modal.saving') : t('orders.modal.create')}
             </button>
           </div>
         </form>

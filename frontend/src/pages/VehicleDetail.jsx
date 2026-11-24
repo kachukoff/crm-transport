@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
+import ErrorMessage from '../components/ErrorMessage';
+import { formatNumber } from '../lib/format';
+import { VEHICLE_TYPES, getVehicleStatusBadge, getVehicleStatusLabel, getVehicleTypeLabel, VEHICLE_STATUSES } from '../lib/vehicle';
+import { localizeVehicleBrand, localizeVehicleModel } from '../lib/vehicleNames';
 
 
 function VehicleDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t, i18n } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: vehicle, isLoading, error } = useQuery({
@@ -54,7 +60,7 @@ function VehicleDetail() {
       navigate('/vehicles');
     },
     onError: (error) => {
-      alert(`Ошибка при удалении: ${error.message}`);
+      alert(t('vehicleDetail.deleteError', { message: error.message }));
     },
   });
 
@@ -70,44 +76,30 @@ function VehicleDetail() {
   };
 
   const handleDelete = () => {
-    if (window.confirm('Вы уверены, что хотите удалить эту машину?')) {
+    if (window.confirm(t('vehicleDetail.deleteConfirm'))) {
       deleteVehicle.mutate();
     }
   };
 
-  if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (isLoading) return <div style={{ padding: '20px' }}>{t('common.loading')}</div>;
   if (error) return <ErrorMessage message={error.message} />;
-  if (!vehicle) return <div style={{ padding: '20px' }}>Машина не найдена</div>;
-
-  const typeMap = {
-    gazelle: 'Газель',
-    medium: 'Средняя',
-    truck: 'Фура',
-    refrigerator: 'Рефрижератор',
-  };
-
-  const statusMap = {
-    available: 'Свободна',
-    on_route: 'В рейсе',
-    maintenance: 'На ремонте',
-  };
+  if (!vehicle) return <div style={{ padding: '20px' }}>{t('vehicleDetail.notFound')}</div>;
 
   return (
     <>
       <div className="page-header">
         <div>
           <button className="btn btn--ghost btn--sm" onClick={() => navigate('/vehicles')} style={{ marginBottom: '10px' }}>
-            ← Назад к машинам
+            {t('vehicleDetail.back')}
           </button>
-          <h2 className="page-header__title">{vehicle.plate_number}</h2>
-          <p className="page-header__subtitle">{vehicle.brand} {vehicle.model}</p>
+          <p className="page-header__subtitle">{localizeVehicleBrand(vehicle.brand, i18n.language)} {localizeVehicleModel(vehicle.model, i18n.language)}</p>
         </div>
         <div className="page-header__actions" style={{ display: 'flex', gap: '10px' }}>
           <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-            Редактировать
+            {t('vehicleDetail.edit')}
           </button>
           <button className="btn btn--danger" onClick={handleDelete}>
-            Удалить
+            {t('vehicleDetail.delete')}
           </button>
         </div>
       </div>
@@ -115,71 +107,72 @@ function VehicleDetail() {
       <div className="card">
         <div className="profile__info">
           <div className="profile__row">
-            <div className="profile__label">Тип машины</div>
-            <div className="profile__value">{typeMap[vehicle.vehicle_type] || vehicle.vehicle_type}</div>
+            <div className="profile__label">{t('vehicleDetail.type')}</div>
+            <div className="profile__value">{getVehicleTypeLabel(t, vehicle.vehicle_type)}</div>
           </div>
           <div className="profile__row">
-            <div className="profile__label">Грузоподъёмность</div>
-            <div className="profile__value">{vehicle.capacity_kg ? `${vehicle.capacity_kg} кг` : '—'}</div>
-          </div>
-          <div className="profile__row">
-            <div className="profile__label">Статус</div>
+            <div className="profile__label">{t('vehicleDetail.capacity')}</div>
             <div className="profile__value">
-              <span className={`badge ${vehicle.status === 'available' ? 'badge--success' :
-                vehicle.status === 'on_route' ? 'badge--warning' : 'badge--danger'
-                }`}>
-                {statusMap[vehicle.status] || vehicle.status}
+              {vehicle.capacity_kg ? t('vehicles.capacityValue', { value: formatNumber(vehicle.capacity_kg, i18n.language) }) : '—'}
+            </div>
+          </div>
+          <div className="profile__row">
+            <div className="profile__label">{t('vehicleDetail.status')}</div>
+            <div className="profile__value">
+              <span className={`badge ${getVehicleStatusBadge(vehicle.status)}`}>
+                {getVehicleStatusLabel(t, vehicle.status)}
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Редактировать машину">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('vehicleDetail.modalTitle')}>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-group__label">Госномер</label>
+            <label className="form-group__label">{t('vehicleDetail.plate')}</label>
             <input className="input" required value={formData.plate_number}
               onChange={(e) => setFormData({ ...formData, plate_number: e.target.value })} />
           </div>
           <div className="form-group">
-            <label className="form-group__label">Марка</label>
+            <label className="form-group__label">{t('vehicleDetail.brand')}</label>
             <input className="input" value={formData.brand}
               onChange={(e) => setFormData({ ...formData, brand: e.target.value })} />
           </div>
           <div className="form-group">
-            <label className="form-group__label">Модель</label>
+            <label className="form-group__label">{t('vehicleDetail.model')}</label>
             <input className="input" value={formData.model}
               onChange={(e) => setFormData({ ...formData, model: e.target.value })} />
           </div>
           <div className="form-group">
-            <label className="form-group__label">Тип машины</label>
+            <label className="form-group__label">{t('vehicleDetail.typeField')}</label>
             <select className="select" value={formData.vehicle_type}
               onChange={(e) => setFormData({ ...formData, vehicle_type: e.target.value })}>
-              <option value="gazelle">Газель</option>
-              <option value="medium">Средняя</option>
-              <option value="truck">Фура</option>
-              <option value="refrigerator">Рефрижератор</option>
+              {VEHICLE_TYPES.map((type) => (
+                <option key={type} value={type}>{t(`vehicleTypes.${type}`)}</option>
+              ))}
             </select>
           </div>
           <div className="form-group">
-            <label className="form-group__label">Грузоподъёмность (кг)</label>
+            <label className="form-group__label">{t('vehicleDetail.capacityField')}</label>
             <input className="input" type="number" value={formData.capacity_kg}
               onChange={(e) => setFormData({ ...formData, capacity_kg: e.target.value })} />
           </div>
           <div className="form-group">
-            <label className="form-group__label">Статус</label>
+            <label className="form-group__label">{t('vehicleDetail.status')}</label>
             <select className="select" value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
-              <option value="available">Свободна</option>
-              <option value="on_route">В рейсе</option>
-              <option value="maintenance">На ремонте</option>
+              {VEHICLE_STATUSES.map((status) => (
+                <option key={status} value={status}>{t(`statuses.vehicle.${status}`)}</option>
+              ))}
             </select>
           </div>
           <div className="form-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>Отмена</button>
+            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>
+              {t('common.cancel')}
+            </button>
             <button type="submit" className="btn btn--primary" disabled={updateVehicle.isPending}>
-              {updateVehicle.isPending ? 'Сохранение...' : 'Сохранить'}
+              {updateVehicle.isPending ? t('common.saving') : t('common.save')}
             </button>
           </div>
         </form>

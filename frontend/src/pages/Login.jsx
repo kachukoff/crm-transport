@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
@@ -7,17 +8,19 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const { login } = useAuth();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
     try {
       await login(email, password);
       navigate('/');
     } catch (err) {
-      // Показываем реальное сообщение от бэкенда
-      setError(err.message || 'Неверный email или пароль');
+      const isEnglish = (i18n.resolvedLanguage || i18n.language || 'ru').startsWith('en');
+      setError(isEnglish ? t('auth.loginError') : err.message || t('auth.loginError'));
     }
   };
 
@@ -26,35 +29,37 @@ export default function Login() {
       <div className="login-card">
         <div className="login-card__logo">
           <span className="login-card__logo-mark">T</span>
-          <span>CRM Транспорт</span>
+          <span>{t('common.appName')}</span>
         </div>
 
-        <h1 className="login-card__title">Вход в систему</h1>
-        <p className="login-card__subtitle">Введите свои учётные данные</p>
+        <h1 className="login-card__title">{t('auth.title')}</h1>
+        <p className="login-card__subtitle">{t('auth.subtitle')}</p>
 
         <form className="login-card__form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-group__label" htmlFor="email">Email</label>
+            <label className="form-group__label" htmlFor="email">{t('auth.email')}</label>
             <input
               className="input"
               type="email"
               id="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@company.ru"
+              placeholder={t('auth.emailPlaceholder')}
               required
             />
           </div>
 
           <div className="form-group">
-            <label className="form-group__label" htmlFor="password">Пароль</label>
+            <label className="form-group__label" htmlFor="password">{t('auth.password')}</label>
             <input
               className="input"
               type="password"
               id="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder={t('auth.passwordPlaceholder')}
               required
             />
           </div>
@@ -62,7 +67,7 @@ export default function Login() {
           {error && <div style={{ color: 'red', fontSize: '14px', marginBottom: '10px' }}>{error}</div>}
 
           <button type="submit" className="btn btn--primary btn--lg btn--block mt-4">
-            Войти
+            {t('auth.submit')}
           </button>
         </form>
       </div>

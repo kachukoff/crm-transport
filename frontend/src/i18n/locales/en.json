@@ -1,0 +1,367 @@
+{
+  "common": {
+    "appName": "CRM Transport",
+    "loading": "Loading...",
+    "noData": "No data",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "create": "Create",
+    "save": "Save"
+  },
+  "header": {
+    "menu": "Menu",
+    "search": "Search...",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "themeToDark": "Switch to dark theme",
+    "themeToLight": "Switch to light theme",
+    "language": "Change language",
+    "profile": "Profile"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "manager": "Manager",
+    "driver": "Driver"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "orders": "Orders",
+    "clients": "Clients",
+    "drivers": "Drivers",
+    "vehicles": "Vehicles",
+    "pricing": "Pricing",
+    "users": "Users",
+    "settings": "Settings",
+    "logout": "Log out",
+    "logoutConfirm": "Are you sure you want to log out?"
+  },
+  "auth": {
+    "title": "Sign in",
+    "subtitle": "Enter your credentials",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "name@company.ru",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Sign in",
+    "loginError": "Invalid email or password"
+  },
+  "statuses": {
+    "order": {
+      "new": "New",
+      "assigned": "Assigned",
+      "in_progress": "In progress",
+      "delivered": "Delivered",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "unknown": "Unknown"
+    },
+    "driver": {
+      "available": "Available",
+      "on_route": "On route",
+      "day_off": "Day off",
+      "fired": "Fired",
+      "unknown": "Unknown"
+    },
+    "vehicle": {
+      "available": "Available",
+      "on_route": "On route",
+      "maintenance": "Under maintenance",
+      "unknown": "Unknown"
+    },
+    "user": {
+      "active": "Active",
+      "blocked": "Blocked",
+      "unknown": "Unknown"
+    }
+  },
+  "dashboard": {
+    "title": "Overview",
+    "welcome": "Welcome, {{name}}",
+    "yourOrders": "Your orders",
+    "driverHint": "Go to Orders to see your trips.",
+    "metrics": {
+      "activeOrders": "Active orders",
+      "availableVehicles": "Available vehicles",
+      "activeDrivers": "Drivers on shift",
+      "newOrders": "New requests"
+    },
+    "recentOrders": "Recent orders",
+    "recentSubtitle": "5 latest changes",
+    "allOrders": "All orders →",
+    "table": {
+      "number": "#",
+      "client": "Client",
+      "route": "Route",
+      "status": "Status",
+      "price": "Price",
+      "date": "Date"
+    }
+  },
+  "orders": {
+    "searchPlaceholder": "Search by number, client or route...",
+    "allStatuses": "All statuses",
+    "statusOptions": {
+      "new": "New",
+      "assigned": "Assigned",
+      "in_progress": "In progress",
+      "delivered": "Delivered",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "allDrivers": "All drivers",
+    "create": "+ Create order",
+    "table": {
+      "number": "#",
+      "client": "Client",
+      "route": "Route",
+      "driver": "Driver",
+      "vehicle": "Vehicle",
+      "status": "Status",
+      "price": "Price",
+      "date": "Date"
+    },
+    "modal": {
+      "title": "Create order",
+      "client": "Client",
+      "clientPlaceholder": "-- Select client --",
+      "route": "Route",
+      "routePlaceholder": "-- Select route --",
+      "cargo": "Cargo name",
+      "weight": "Weight (kg)",
+      "price": "Price (₽, optional)",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "create": "Create"
+    }
+  },
+  "orderDetail": {
+    "back": "← Back to orders",
+    "orderTitle": "Order #{{id}}",
+    "created": "Created: {{date}}",
+    "info": "Order information",
+    "client": "Client",
+    "route": "Route",
+    "cargo": "Cargo",
+    "cargoValue": "{{name}} ({{weight}} kg)",
+    "price": "Price",
+    "priceNotCalculated": "Not calculated",
+    "driver": "Driver",
+    "driverNotAssigned": "Not assigned",
+    "vehicle": "Vehicle",
+    "vehicleNotAssigned": "Not assigned",
+    "actions": "Actions",
+    "currentStatus": "Current status",
+    "updating": "Updating...",
+    "changeAssignment": "Change assignment",
+    "assignDriver": "Assign driver",
+    "cancelOrder": "Cancel order",
+    "deleteOrder": "Delete order",
+    "deleting": "Deleting...",
+    "assignTitle": "Assign driver and vehicle",
+    "driverPlaceholder": "-- Select driver --",
+    "vehiclePlaceholder": "-- Select vehicle --",
+    "assign": "Assign",
+    "confirmCancel": "Are you sure you want to cancel this order?",
+    "confirmDelete": "Are you sure you want to delete this order?",
+    "statusChangeError": "Error changing status: {{message}}",
+    "deleteError": "Error deleting: {{message}}",
+    "notFound": "Order not found"
+  },
+  "clientTypes": {
+    "legal": "Legal entity",
+    "individual": "Individual",
+    "legalShort": "Legal",
+    "individualShort": "Individual"
+  },
+  "clients": {
+    "searchPlaceholder": "Search by name or tax ID...",
+    "allTypes": "All types",
+    "legalPlural": "Legal entities",
+    "individualPlural": "Individuals",
+    "add": "+ Add client",
+    "table": {
+      "name": "Name",
+      "type": "Type",
+      "inn": "Tax ID",
+      "contact": "Contact person",
+      "phone": "Phone"
+    },
+    "modal": {
+      "title": "Add client",
+      "type": "Client type",
+      "name": "Name / full name",
+      "inn": "Tax ID (optional)",
+      "contact": "Contact person",
+      "phone": "Phone",
+      "email": "Email"
+    }
+  },
+  "clientDetail": {
+    "back": "← Back to clients",
+    "edit": "Edit",
+    "delete": "Delete",
+    "inn": "Tax ID",
+    "contact": "Contact person",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "modalTitle": "Edit client",
+    "type": "Client type",
+    "name": "Name / full name",
+    "deleteConfirm": "Are you sure you want to delete this client?",
+    "deleteError": "Error deleting: {{message}}",
+    "notFound": "Client not found"
+  },
+  "drivers": {
+    "searchPlaceholder": "Search by name or phone...",
+    "allStatuses": "All statuses",
+    "add": "+ Add driver",
+    "table": {
+      "name": "Full name",
+      "phone": "Phone",
+      "license": "License",
+      "status": "Status",
+      "vehicle": "Vehicle"
+    },
+    "modal": {
+      "title": "Add driver",
+      "name": "Full name",
+      "phone": "Phone",
+      "license": "License number"
+    }
+  },
+  "driverDetail": {
+    "back": "← Back to drivers",
+    "phoneNotSpecified": "Phone not specified",
+    "edit": "Edit",
+    "delete": "Delete",
+    "license": "License number",
+    "status": "Status",
+    "vehicle": "Vehicle",
+    "vehicleNotAssigned": "Not assigned",
+    "modalTitle": "Edit driver",
+    "name": "Full name",
+    "phone": "Phone",
+    "licenseField": "License number",
+    "deleteConfirm": "Are you sure you want to delete this driver?",
+    "deleteError": "Error deleting: {{message}}",
+    "notFound": "Driver not found"
+  },
+  "vehicleTypes": {
+    "gazelle": "Gazelle",
+    "medium": "Medium",
+    "truck": "Truck",
+    "refrigerator": "Refrigerator",
+    "unknown": "Unknown"
+  },
+  "vehicles": {
+    "searchPlaceholder": "Search by plate or brand...",
+    "allStatuses": "All statuses",
+    "add": "+ Add vehicle",
+    "capacityValue": "{{value}} kg",
+    "table": {
+      "plate": "Plate",
+      "brandModel": "Brand / Model",
+      "type": "Type",
+      "capacity": "Capacity",
+      "status": "Status"
+    },
+    "modal": {
+      "title": "Add vehicle",
+      "plate": "Plate number",
+      "platePlaceholder": "A123BC 77",
+      "brand": "Brand",
+      "brandPlaceholder": "GAZ",
+      "model": "Model",
+      "modelPlaceholder": "Gazelle Next",
+      "type": "Vehicle type",
+      "capacity": "Capacity (kg)",
+      "capacityPlaceholder": "1500"
+    }
+  },
+  "vehicleDetail": {
+    "back": "← Back to vehicles",
+    "edit": "Edit",
+    "delete": "Delete",
+    "type": "Vehicle type",
+    "capacity": "Capacity",
+    "status": "Status",
+    "modalTitle": "Edit vehicle",
+    "plate": "Plate number",
+    "brand": "Brand",
+    "model": "Model",
+    "typeField": "Vehicle type",
+    "capacityField": "Capacity (kg)",
+    "deleteConfirm": "Are you sure you want to delete this vehicle?",
+    "deleteError": "Error deleting: {{message}}",
+    "notFound": "Vehicle not found"
+  },
+  "pricing": {
+    "searchPlaceholder": "Search by vehicle type...",
+    "allTypes": "All types",
+    "add": "+ Add rate",
+    "table": {
+      "vehicleType": "Vehicle type",
+      "baseRate": "Base rate",
+      "perKm": "Per km",
+      "perKg": "Per kg"
+    },
+    "modal": {
+      "title": "Add rate",
+      "vehicleType": "Vehicle type",
+      "baseRate": "Base rate (₽)",
+      "perKm": "Price per km (₽)",
+      "perKg": "Price per kg (₽)"
+    }
+  },
+  "pricingDetail": {
+    "back": "← Back to rates",
+    "subtitle": "Pricing setup",
+    "edit": "Edit",
+    "delete": "Delete",
+    "baseRate": "Base rate",
+    "perKm": "Price per km",
+    "perKg": "Price per kg",
+    "modalTitle": "Edit rate",
+    "vehicleType": "Vehicle type",
+    "baseRateField": "Base rate (₽)",
+    "perKmField": "Price per km (₽)",
+    "perKgField": "Price per kg (₽)",
+    "deleteConfirm": "Are you sure you want to delete this rate?",
+    "deleteError": "Error deleting: {{message}}",
+    "notFound": "Rate not found"
+  },
+  "users": {
+    "searchPlaceholder": "Search by name or email...",
+    "allRoles": "All roles",
+    "add": "+ Add user",
+    "table": {
+      "name": "Full name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status"
+    },
+    "modal": {
+      "title": "Add user",
+      "name": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "role": "Role"
+    },
+    "createError": "Error creating: {{message}}"
+  },
+  "userDetail": {
+    "back": "← Back to users",
+    "edit": "Edit",
+    "delete": "Delete",
+    "role": "Role",
+    "status": "Status",
+    "lastLogin": "Last login",
+    "modalTitle": "Edit user",
+    "name": "Full name",
+    "active": "Active (can sign in)",
+    "deleteConfirm": "Are you sure you want to delete this user?",
+    "deleteError": "Error deleting: {{message}}",
+    "notFound": "User not found"
+  }
+}

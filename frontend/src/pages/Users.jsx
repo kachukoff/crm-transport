@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
@@ -9,6 +10,7 @@ import ErrorMessage from '../components/ErrorMessage';
 function Users() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -32,7 +34,7 @@ function Users() {
       setFormData({ email: '', full_name: '', password: '', role: 'manager' });
     },
     onError: (error) => {
-      alert(`Ошибка при создании: ${error.message}`);
+      alert(t('users.createError', { message: error.message }));
     },
   });
 
@@ -41,29 +43,24 @@ function Users() {
     createUser.mutate(formData);
   };
 
-  if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (isLoading) return <div style={{ padding: '20px' }}>{t('common.loading')}</div>;
   if (error) return <ErrorMessage message={error.message} />;
-
-  const roleMap = {
-    admin: 'Администратор',
-    manager: 'Менеджер',
-    driver: 'Водитель',
-  };
 
   return (
     <>
       <div className="toolbar">
-        <input className="input toolbar__search" type="search" placeholder="Поиск по ФИО или email..." />
-        <select className="select select--auto">
-          <option value="">Все роли</option>
-          <option value="admin">Администратор</option>
-          <option value="manager">Менеджер</option>
-          <option value="driver">Водитель</option>
+        <input className="input toolbar__search" type="search" placeholder={t('users.searchPlaceholder')}
+          aria-label={t('users.searchPlaceholder')} />
+        <select className="select select--auto" aria-label={t('users.allRoles')}>
+          <option value="">{t('users.allRoles')}</option>
+          <option value="admin">{t('roles.admin')}</option>
+          <option value="manager">{t('roles.manager')}</option>
+          <option value="driver">{t('roles.driver')}</option>
         </select>
         <div className="toolbar__spacer" />
         {user?.role === 'admin' && (
           <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>
-            + Добавить пользователя
+            {t('users.add')}
           </button>
         )}
       </div>
@@ -72,16 +69,16 @@ function Users() {
         <table className="table">
           <thead>
             <tr>
-              <th>ФИО</th>
-              <th>Email</th>
-              <th>Роль</th>
-              <th>Статус</th>
+              <th>{t('users.table.name')}</th>
+              <th>{t('users.table.email')}</th>
+              <th>{t('users.table.role')}</th>
+              <th>{t('users.table.status')}</th>
             </tr>
           </thead>
           <tbody>
             {users.length === 0 ? (
               <tr>
-                <td colSpan="4" className="table__empty">Нет данных</td>
+                <td colSpan="4" className="table__empty">{t('common.noData')}</td>
               </tr>
             ) : (
               users.map(u => (
@@ -94,14 +91,14 @@ function Users() {
                   <td>{u.email}</td>
                   <td>
                     <span className={`badge ${u.role === 'admin' ? 'badge--danger' :
-                        u.role === 'manager' ? 'badge--primary' : 'badge--info'
+                      u.role === 'manager' ? 'badge--primary' : 'badge--info'
                       }`}>
-                      {roleMap[u.role] || u.role}
+                      {t(`roles.${u.role}`, { defaultValue: u.role })}
                     </span>
                   </td>
                   <td>
                     <span className={`badge ${u.is_active ? 'badge--success' : 'badge--neutral'}`}>
-                      {u.is_active ? 'Активен' : 'Заблокирован'}
+                      {u.is_active ? t('statuses.user.active') : t('statuses.user.blocked')}
                     </span>
                   </td>
                 </tr>
@@ -111,36 +108,38 @@ function Users() {
         </table>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Добавить пользователя">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('users.modal.title')}>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-group__label">ФИО</label>
+            <label className="form-group__label">{t('users.modal.name')}</label>
             <input className="input" required value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })} />
           </div>
           <div className="form-group">
-            <label className="form-group__label">Email</label>
+            <label className="form-group__label">{t('users.modal.email')}</label>
             <input className="input" type="email" required value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
           </div>
           <div className="form-group">
-            <label className="form-group__label">Пароль</label>
+            <label className="form-group__label">{t('users.modal.password')}</label>
             <input className="input" type="password" required value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
           </div>
           <div className="form-group">
-            <label className="form-group__label">Роль</label>
+            <label className="form-group__label">{t('users.modal.role')}</label>
             <select className="select" value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value })}>
-              <option value="manager">Менеджер</option>
-              <option value="admin">Администратор</option>
-              <option value="driver">Водитель</option>
+              <option value="manager">{t('roles.manager')}</option>
+              <option value="admin">{t('roles.admin')}</option>
+              <option value="driver">{t('roles.driver')}</option>
             </select>
           </div>
           <div className="form-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>Отмена</button>
+            <button type="button" className="btn btn--secondary" onClick={() => setIsModalOpen(false)}>
+              {t('common.cancel')}
+            </button>
             <button type="submit" className="btn btn--primary" disabled={createUser.isPending}>
-              {createUser.isPending ? 'Сохранение...' : 'Создать'}
+              {createUser.isPending ? t('common.saving') : t('common.create')}
             </button>
           </div>
         </form>
