@@ -4,9 +4,10 @@ from sqlalchemy import select
 from typing import Optional
 from app.database import get_db
 from app.models.user import User
-from app.schemas.user import UserLogin, UserResponse
-from app.security import verify_password
+from app.schemas.user import UserLogin, PasswordChange, UserResponse
+from app.security import hash_password, verify_password
 from app.auth import create_session, get_user_id_by_token, delete_session
+from app.dependencies import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -51,6 +52,30 @@ async def logout(
       await delete_session(session_token)
   response.delete_cookie("session_token")
   return {"message": "Вы вышли из системы"}
+
+
+@router.patch("/password")
+async def change_password(
+  data: PasswordChange,
+  current_user: User = Depends(get_current_user),
+  db: AsyncSession = Depends(get_db),
+):
+  if not verify_password(data.current_password, current_user.password_hash):
+    raise HTTPException(status_code=400, detail="Неверный текущий пароль")
+
+  if data.new_password == data.current_password:
+    raise HTTPException(status_code=400, detail="Новый пароль должен отличаться от текущего")
+
+  if len(data.new_password) < 8:
+    raise HTTPException(status_code=400, detail="Пароль должен содержать минимум 8 символов")
+
+  if not any(char.isalpha() for char in data.new_password) or not any(char.isdigit() for char in data.new_password):
+    raise HTTPException(status_code=400, detail="Пароль должен содержать буквы и цифры")
+
+  current_user.password_hash = hash_password(data.new_password)
+  await db.commit()
+
+  return {"message": "Пароль изменён"}
 
 
 @router.get("/me", response_model=UserResponse)

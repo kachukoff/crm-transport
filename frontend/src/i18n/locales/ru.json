@@ -377,5 +377,32 @@
     "deleteError": "Ошибка при удалении: {{message}}",
     "notFound": "Пользователь не найден",
     "deleted": "Пользователь удалён"
+  },
+  "profile": {
+    "title": "Мой профиль",
+    "subtitle": "Личные данные и безопасность",
+    "personal": "Личные данные",
+    "fullName": "ФИО",
+    "email": "Email",
+    "role": "Роль",
+    "registeredAt": "Дата регистрации",
+    "security": "Смена пароля",
+    "currentPassword": "Текущий пароль",
+    "newPassword": "Новый пароль",
+    "confirmPassword": "Подтвердите новый пароль",
+    "newPasswordPlaceholder": "Минимум 8 символов",
+    "confirmPasswordPlaceholder": "Повторите пароль",
+    "passwordHint": "Не менее 8 символов, буквы и цифры",
+    "savePassword": "Сохранить пароль",
+    "saving": "Сохранение...",
+    "passwordChanged": "Пароль изменён",
+    "passwordError": "Не удалось изменить пароль",
+    "errors": {
+      "required": "Заполните все поля",
+      "min": "Минимум 8 символов",
+      "letterDigit": "Пароль должен содержать буквы и цифры",
+      "mismatch": "Пароли не совпадают",
+      "same": "Новый пароль должен отличаться от текущего"
+    }
   }
 }

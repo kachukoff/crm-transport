@@ -377,5 +377,32 @@
     "deleteError": "Error deleting: {{message}}",
     "notFound": "User not found",
     "deleted": "User deleted"
+  },
+  "profile": {
+    "title": "My profile",
+    "subtitle": "Personal data and security",
+    "personal": "Personal data",
+    "fullName": "Full name",
+    "email": "Email",
+    "role": "Role",
+    "registeredAt": "Registered at",
+    "security": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "newPasswordPlaceholder": "At least 8 characters",
+    "confirmPasswordPlaceholder": "Repeat password",
+    "passwordHint": "At least 8 characters, letters and digits",
+    "savePassword": "Save password",
+    "saving": "Saving...",
+    "passwordChanged": "Password changed",
+    "passwordError": "Could not change password",
+    "errors": {
+      "required": "Fill in all fields",
+      "min": "At least 8 characters",
+      "letterDigit": "Password must contain letters and digits",
+      "mismatch": "Passwords do not match",
+      "same": "New password must differ from the current one"
+    }
   }
 }
