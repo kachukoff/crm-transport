@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useToast } from '../components/ToastContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
 
-
 function UserDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const toast = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: user, isLoading, error } = useQuery({
@@ -48,10 +49,11 @@ function UserDetail() {
     mutationFn: () => api.delete(`/users/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast.success(t('userDetail.deleted'));
       navigate('/users');
     },
     onError: (error) => {
-      alert(t('userDetail.deleteError', { message: error.message }));
+      toast.error(t('userDetail.deleteError', { message: error.message }));
     },
   });
 

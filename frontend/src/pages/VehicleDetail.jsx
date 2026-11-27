@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useToast } from '../components/ToastContext';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
@@ -9,12 +10,12 @@ import { formatNumber } from '../lib/format';
 import { VEHICLE_TYPES, getVehicleStatusBadge, getVehicleStatusLabel, getVehicleTypeLabel, VEHICLE_STATUSES } from '../lib/vehicle';
 import { localizeVehicleBrand, localizeVehicleModel } from '../lib/vehicleNames';
 
-
 function VehicleDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t, i18n } = useTranslation();
+  const toast = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: vehicle, isLoading, error } = useQuery({
@@ -57,10 +58,11 @@ function VehicleDetail() {
     mutationFn: () => api.delete(`/vehicles/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
+      toast.success(t('vehicleDetail.deleted'));
       navigate('/vehicles');
     },
     onError: (error) => {
-      alert(t('vehicleDetail.deleteError', { message: error.message }));
+      toast.error(t('vehicleDetail.deleteError', { message: error.message }));
     },
   });
 
@@ -92,7 +94,10 @@ function VehicleDetail() {
           <button className="btn btn--ghost btn--sm" onClick={() => navigate('/vehicles')} style={{ marginBottom: '10px' }}>
             {t('vehicleDetail.back')}
           </button>
-          <p className="page-header__subtitle">{localizeVehicleBrand(vehicle.brand, i18n.language)} {localizeVehicleModel(vehicle.model, i18n.language)}</p>
+          <h2 className="page-header__title">{vehicle.plate_number}</h2>
+          <p className="page-header__subtitle">
+            {localizeVehicleBrand(vehicle.brand, i18n.language)} {localizeVehicleModel(vehicle.model, i18n.language)}
+          </p>
         </div>
         <div className="page-header__actions" style={{ display: 'flex', gap: '10px' }}>
           <button className="btn btn--primary" onClick={() => setIsModalOpen(true)}>

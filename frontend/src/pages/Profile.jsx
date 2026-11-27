@@ -1,7 +1,12 @@
+import { useTranslation } from 'react-i18next';
+import { useToast } from '../components/ToastContext';
 import { useAuth } from '../context/AuthContext';
 
+
 function Profile() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const { t } = useTranslation();
+  const toast = useToast();
 
   if (!user) return null;
 
@@ -60,7 +65,7 @@ function Profile() {
           <div className="card__header">
             <h3 className="card__title">Смена пароля</h3>
           </div>
-          <form onSubmit={(e) => { e.preventDefault(); alert('Функция в разработке'); }}>
+          <form onSubmit={(e) => { e.preventDefault(); toast.info(t('common.inDevelopment')); }}>
             <div className="form-group">
               <label className="form-group__label">Текущий пароль</label>
               <input className="input" type="password" placeholder="••••••••" />
@@ -77,18 +82,6 @@ function Profile() {
             <button type="submit" className="btn btn--primary">Сохранить пароль</button>
           </form>
         </div>
-      </div>
-
-      {/* Выход */}
-      <div className="profile__actions">
-        <button 
-          className="btn btn--danger" 
-          onClick={() => {
-            if (window.confirm('Вы уверены, что хотите выйти?')) logout();
-          }}
-        >
-          Выйти из системы
-        </button>
       </div>
     </>
   );

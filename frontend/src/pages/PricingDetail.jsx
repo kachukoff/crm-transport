@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useToast } from '../components/ToastContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
@@ -15,15 +16,18 @@ function PricingDetail() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { t, i18n } = useTranslation();
+  const toast = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const deletePricing = useMutation({
     mutationFn: () => api.delete(`/pricing/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pricing'] });
+      toast.success(t('pricingDetail.deleted'));
       navigate('/pricing');
     },
     onError: (error) => {
-      alert(t('pricingDetail.deleteError', { message: error.message }));
+      toast.error(t('pricingDetail.deleteError', { message: error.message }));
     },
   });
 
@@ -72,11 +76,11 @@ function PricingDetail() {
 
   const handleDelete = () => {
     if (window.confirm(t('pricingDetail.deleteConfirm'))) {
-       deletePricing.mutate();
-     }
+      deletePricing.mutate();
+    }
   };
 
-  if (isLoading) return <div style={{ padding: '20px' }}>Загрузка...</div>;
+  if (isLoading) return <div style={{ padding: '20px' }}>{t('common.loading')}</div>;
   if (error) return <ErrorMessage message={error.message} />;
   if (!pricing) return <div style={{ padding: '20px' }}>{t('pricingDetail.notFound')}</div>;
 

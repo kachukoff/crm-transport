@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useToast } from '../components/ToastContext';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
@@ -20,6 +21,7 @@ function OrderDetail() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
+  const toast = useToast();
   const queryClient = useQueryClient();
 
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
@@ -48,9 +50,10 @@ function OrderDetail() {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       queryClient.invalidateQueries({ queryKey: ['drivers'] });
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
+      toast.success(t('orderDetail.statusUpdated'));
     },
     onError: (err) => {
-      alert(t('orderDetail.statusChangeError', { message: err.message }));
+      toast.error(t('orderDetail.statusChangeError', { message: err.message }));
     },
   });
 
@@ -62,6 +65,10 @@ function OrderDetail() {
       queryClient.invalidateQueries({ queryKey: ['drivers'] });
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
       setIsAssignModalOpen(false);
+      toast.success(t('orderDetail.assignmentSaved'));
+    },
+    onError: (err) => {
+      toast.error(t('orderDetail.assignError', { message: err.message }));
     },
   });
 
@@ -69,10 +76,11 @@ function OrderDetail() {
     mutationFn: () => api.delete(`/orders/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
+      toast.success(t('orderDetail.deleted'));
       navigate('/orders');
     },
     onError: (err) => {
-      alert(t('orderDetail.deleteError', { message: err.message }));
+      toast.error(t('orderDetail.deleteError', { message: err.message }));
     },
   });
 
@@ -297,7 +305,6 @@ function OrderDetail() {
                 <option key={v.id} value={v.id}>
                   {v.plate_number} ({localizeVehicleBrand(v.brand, i18n.language)} {localizeVehicleModel(v.model, i18n.language)})
                 </option>
-
               ))}
             </select>
           </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useToast } from '../components/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
@@ -11,6 +12,7 @@ function Users() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useTranslation();
+  const toast = useToast();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -30,11 +32,12 @@ function Users() {
     mutationFn: (newUser) => api.post('/users/', newUser),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast.success(t('users.created'));
       setIsModalOpen(false);
       setFormData({ email: '', full_name: '', password: '', role: 'manager' });
     },
     onError: (error) => {
-      alert(t('users.createError', { message: error.message }));
+      toast.error(t('users.createError', { message: error.message }));
     },
   });
 

@@ -1,12 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import LanguageSwitcher from './LanguageSwitcher';
+import UserMenu from './UserMenu';
 
-function Header({ title }) {
+function Header({ sidebarCollapsed, onToggleSidebar }) {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
 
@@ -16,8 +15,10 @@ function Header({ title }) {
         <button
           type="button"
           className="header__burger"
-          title={t('header.menu')}
-          aria-label={t('header.menu')}
+          onClick={onToggleSidebar}
+          aria-expanded={!sidebarCollapsed}
+          title={sidebarCollapsed ? t('header.expandSidebar') : t('header.collapseSidebar')}
+          aria-label={sidebarCollapsed ? t('header.expandSidebar') : t('header.collapseSidebar')}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="3" y1="6" x2="21" y2="6" />
@@ -94,17 +95,7 @@ function Header({ title }) {
 
         <LanguageSwitcher />
 
-        {user && (
-          <div
-            className="header__profile"
-            onClick={() => navigate('/profile')}
-            title={t('header.profile')}
-          >
-            <div className="header__avatar">
-              {user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
-            </div>
-          </div>
-        )}
+      <UserMenu />
       </div>
     </header>
   );

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useToast } from '../components/ToastContext';
 import { api } from '../api/client';
 import { DRIVER_STATUSES, getDriverStatusBadge, getDriverStatusLabel } from '../lib/driverStatus';
 import Modal from '../components/Modal';
@@ -12,6 +13,7 @@ function DriverDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const toast = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: driver, isLoading, error } = useQuery({
@@ -50,10 +52,11 @@ function DriverDetail() {
     mutationFn: () => api.delete(`/drivers/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      toast.success(t('driverDetail.deleted'));
       navigate('/drivers');
     },
     onError: (error) => {
-      alert(t('driverDetail.deleteError', { message: error.message }));
+      toast.error(t('driverDetail.deleteError', { message: error.message }));
     },
   });
 
@@ -73,7 +76,6 @@ function DriverDetail() {
 
   if (isLoading) return <div style={{ padding: '20px' }}>{t('common.loading')}</div>;
   if (error) return <ErrorMessage message={error.message} />;
-  
   if (!driver) return <div style={{ padding: '20px' }}>{t('driverDetail.notFound')}</div>;
 
   return (
@@ -107,7 +109,7 @@ function DriverDetail() {
             <div className="profile__value">
               <span className={`badge ${getDriverStatusBadge(driver.status)}`}>
                 {getDriverStatusLabel(t, driver.status)}
-               </span>
+              </span>
             </div>
           </div>
           <div className="profile__row">

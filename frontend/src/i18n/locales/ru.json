@@ -6,7 +6,9 @@
     "cancel": "Отмена",
     "saving": "Сохранение...",
     "create": "Создать",
-    "save": "Сохранить"
+    "save": "Сохранить",
+    "close": "Закрыть",
+    "inDevelopment": "Функция в разработке"
   },
   "header": {
     "menu": "Меню",
@@ -16,7 +18,9 @@
     "themeToDark": "Включить тёмную тему",
     "themeToLight": "Включить светлую тему",
     "language": "Сменить язык",
-    "profile": "Профиль"
+    "profile": "Профиль",
+    "collapseSidebar": "Свернуть меню",
+    "expandSidebar": "Развернуть меню"
   },
   "roles": {
     "admin": "Администратор",
@@ -165,7 +169,11 @@
     "confirmDelete": "Вы уверены, что хотите удалить этот заказ?",
     "statusChangeError": "Ошибка при смене статуса: {{message}}",
     "deleteError": "Ошибка при удалении: {{message}}",
-    "notFound": "Заказ не найден"
+    "notFound": "Заказ не найден",
+    "statusUpdated": "Статус обновлён",
+    "assignmentSaved": "Назначение сохранено",
+    "assignError": "Ошибка при назначении: {{message}}",
+    "deleted": "Заказ удалён"
   },
   "clientTypes": {
     "legal": "Юридическое лицо",
@@ -210,7 +218,8 @@
     "name": "Название / ФИО",
     "deleteConfirm": "Вы уверены, что хотите удалить этого клиента?",
     "deleteError": "Ошибка при удалении: {{message}}",
-    "notFound": "Клиент не найден"
+    "notFound": "Клиент не найден",
+    "deleted": "Клиент удалён"
   },
   "drivers": {
     "searchPlaceholder": "Поиск по ФИО или телефону...",
@@ -245,7 +254,8 @@
     "licenseField": "Номер прав",
     "deleteConfirm": "Вы уверены, что хотите удалить этого водителя?",
     "deleteError": "Ошибка при удалении: {{message}}",
-    "notFound": "Водитель не найден"
+    "notFound": "Водитель не найден",
+    "deleted": "Водитель удалён"
   },
   "vehicleTypes": {
     "gazelle": "Газель",
@@ -294,7 +304,8 @@
     "capacityField": "Грузоподъёмность (кг)",
     "deleteConfirm": "Вы уверены, что хотите удалить эту машину?",
     "deleteError": "Ошибка при удалении: {{message}}",
-    "notFound": "Машина не найдена"
+    "notFound": "Машина не найдена",
+    "deleted": "Машина удалена"
   },
   "pricing": {
     "searchPlaceholder": "Поиск по типу транспорта...",
@@ -329,7 +340,8 @@
     "perKgField": "Цена за кг (₽)",
     "deleteConfirm": "Вы уверены, что хотите удалить этот тариф?",
     "deleteError": "Ошибка при удалении: {{message}}",
-    "notFound": "Тариф не найден"
+    "notFound": "Тариф не найден",
+    "deleted": "Тариф удалён"
   },
   "users": {
     "searchPlaceholder": "Поиск по ФИО или email...",
@@ -348,7 +360,8 @@
       "password": "Пароль",
       "role": "Роль"
     },
-    "createError": "Ошибка при создании: {{message}}"
+    "createError": "Ошибка при создании: {{message}}",
+    "created": "Пользователь создан"
   },
   "userDetail": {
     "back": "← Назад к пользователям",
@@ -362,6 +375,7 @@
     "active": "Активен (можно входить в систему)",
     "deleteConfirm": "Вы уверены, что хотите удалить этого пользователя?",
     "deleteError": "Ошибка при удалении: {{message}}",
-    "notFound": "Пользователь не найден"
+    "notFound": "Пользователь не найден",
+    "deleted": "Пользователь удалён"
   }
 }

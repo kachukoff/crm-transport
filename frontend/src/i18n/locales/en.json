@@ -6,7 +6,9 @@
     "cancel": "Cancel",
     "saving": "Saving...",
     "create": "Create",
-    "save": "Save"
+    "save": "Save",
+    "close": "Close",
+    "inDevelopment": "Coming soon"
   },
   "header": {
     "menu": "Menu",
@@ -16,7 +18,9 @@
     "themeToDark": "Switch to dark theme",
     "themeToLight": "Switch to light theme",
     "language": "Change language",
-    "profile": "Profile"
+    "profile": "Profile",
+    "collapseSidebar": "Collapse menu",
+    "expandSidebar": "Expand menu"
   },
   "roles": {
     "admin": "Administrator",
@@ -165,7 +169,11 @@
     "confirmDelete": "Are you sure you want to delete this order?",
     "statusChangeError": "Error changing status: {{message}}",
     "deleteError": "Error deleting: {{message}}",
-    "notFound": "Order not found"
+    "notFound": "Order not found",
+    "statusUpdated": "Status updated",
+    "assignmentSaved": "Assignment saved",
+    "assignError": "Assignment error: {{message}}",
+    "deleted": "Order deleted"
   },
   "clientTypes": {
     "legal": "Legal entity",
@@ -210,7 +218,8 @@
     "name": "Name / full name",
     "deleteConfirm": "Are you sure you want to delete this client?",
     "deleteError": "Error deleting: {{message}}",
-    "notFound": "Client not found"
+    "notFound": "Client not found",
+    "deleted": "Client deleted"
   },
   "drivers": {
     "searchPlaceholder": "Search by name or phone...",
@@ -245,7 +254,8 @@
     "licenseField": "License number",
     "deleteConfirm": "Are you sure you want to delete this driver?",
     "deleteError": "Error deleting: {{message}}",
-    "notFound": "Driver not found"
+    "notFound": "Driver not found",
+    "deleted": "Driver deleted"
   },
   "vehicleTypes": {
     "gazelle": "Gazelle",
@@ -294,7 +304,8 @@
     "capacityField": "Capacity (kg)",
     "deleteConfirm": "Are you sure you want to delete this vehicle?",
     "deleteError": "Error deleting: {{message}}",
-    "notFound": "Vehicle not found"
+    "notFound": "Vehicle not found",
+    "deleted": "Vehicle deleted"
   },
   "pricing": {
     "searchPlaceholder": "Search by vehicle type...",
@@ -329,7 +340,8 @@
     "perKgField": "Price per kg (₽)",
     "deleteConfirm": "Are you sure you want to delete this rate?",
     "deleteError": "Error deleting: {{message}}",
-    "notFound": "Rate not found"
+    "notFound": "Rate not found",
+    "deleted": "Rate deleted"
   },
   "users": {
     "searchPlaceholder": "Search by name or email...",
@@ -348,7 +360,8 @@
       "password": "Password",
       "role": "Role"
     },
-    "createError": "Error creating: {{message}}"
+    "createError": "Error creating: {{message}}",
+    "created": "User created"
   },
   "userDetail": {
     "back": "← Back to users",
@@ -362,6 +375,7 @@
     "active": "Active (can sign in)",
     "deleteConfirm": "Are you sure you want to delete this user?",
     "deleteError": "Error deleting: {{message}}",
-    "notFound": "User not found"
+    "notFound": "User not found",
+    "deleted": "User deleted"
   }
 }

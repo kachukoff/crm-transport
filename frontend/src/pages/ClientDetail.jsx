@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useToast } from '../components/ToastContext';
 import { api } from '../api/client';
 import Modal from '../components/Modal';
 import ErrorMessage from '../components/ErrorMessage';
@@ -11,6 +12,7 @@ function ClientDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const toast = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: client, isLoading, error } = useQuery({
@@ -28,7 +30,6 @@ function ClientDetail() {
     address: '',
   });
 
-  // Заполняем форму, когда данные загрузились
   useEffect(() => {
     if (client) {
       setFormData({
@@ -41,7 +42,7 @@ function ClientDetail() {
         address: client.address || '',
       });
     }
-  }, [client]);  // <-- сработает, когда client загрузится
+  }, [client]);
 
   const updateClient = useMutation({
     mutationFn: (data) => api.patch(`/clients/${id}`, data),
@@ -56,10 +57,11 @@ function ClientDetail() {
     mutationFn: () => api.delete(`/clients/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients'] });
+      toast.success(t('clientDetail.deleted'));
       navigate('/clients');
     },
     onError: (error) => {
-      alert(t('clientDetail.deleteError', { message: error.message }));
+      toast.error(t('clientDetail.deleteError', { message: error.message }));
     },
   });
 
@@ -128,7 +130,6 @@ function ClientDetail() {
         </div>
       </div>
 
-      {/* Модалка редактирования */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('clientDetail.modalTitle')}>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
