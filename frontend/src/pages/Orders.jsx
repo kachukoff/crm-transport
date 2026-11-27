@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
+import DriverSelect from '../components/DriverSelect';
+import DropdownSelect from '../components/DropdownSelect';
 import ErrorMessage from '../components/ErrorMessage';
 import { formatCurrency, formatDate } from '../lib/format';
 import {
@@ -13,11 +15,15 @@ import {
   getOrderStatusLabel,
 } from '../lib/orderStatus';
 
+const PER_PAGE_OPTIONS = [10, 20, 50, 100];
+const DEFAULT_PER_PAGE = 20;
+
 function Orders() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -28,10 +34,33 @@ function Orders() {
     price: '',
   });
 
-  const { data: orders = [], isLoading, error } = useQuery({
-    queryKey: ['orders'],
-    queryFn: () => api.get('/orders/'),
+  const search = searchParams.get('search') || '';
+  const statusFilter = searchParams.get('status') || '';
+  const driverFilter = searchParams.get('driver') || '';
+  const page = Math.max(1, Number(searchParams.get('page')) || 1);
+  const perPageParam = Number(searchParams.get('per_page'));
+  const perPage = PER_PAGE_OPTIONS.includes(perPageParam) ? perPageParam : DEFAULT_PER_PAGE;
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['orders', { search, statusFilter, driverFilter, page, perPage }],
+    queryFn: () => {
+      const params = new URLSearchParams({
+        limit: String(perPage),
+        offset: String((page - 1) * perPage),
+      });
+
+      if (search) params.set('search', search);
+      if (statusFilter) params.set('status', statusFilter);
+      if (driverFilter) params.set('driver_id', driverFilter);
+
+      return api.get(`/orders/?${params.toString()}`);
+    },
+    placeholderData: (previousData) => previousData,
   });
+
+  const orders = data?.items ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / perPage));
 
   const { data: clients = [] } = useQuery({
     queryKey: ['clients'],
@@ -57,6 +86,31 @@ function Orders() {
     },
   });
 
+  const updateFilter = (key, value) => {
+    const next = new URLSearchParams(searchParams);
+
+    if (value) {
+      next.set(key, value);
+    } else {
+      next.delete(key);
+    }
+
+    next.delete('page');
+    setSearchParams(next);
+  };
+
+  const goToPage = (nextPage) => {
+    const next = new URLSearchParams(searchParams);
+
+    if (nextPage <= 1) {
+      next.delete('page');
+    } else {
+      next.set('page', String(nextPage));
+    }
+
+    setSearchParams(next);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     createOrder.mutate({
@@ -80,23 +134,48 @@ function Orders() {
           type="search"
           placeholder={t('orders.searchPlaceholder')}
           aria-label={t('orders.searchPlaceholder')}
+          value={search}
+          onChange={(e) => updateFilter('search', e.target.value)}
         />
 
-        <select className="select select--auto" aria-label={t('orders.allStatuses')}>
-          <option value="">{t('orders.allStatuses')}</option>
-          {ORDER_STATUSES.map(status => (
-            <option key={status} value={status}>
-              {t(`orders.statusOptions.${status}`)}
-            </option>
-          ))}
-        </select>
+        <DropdownSelect
+          className="driver-select--auto"
+          compact
+          options={ORDER_STATUSES.map(status => ({
+            value: status,
+            label: t(`orders.statusOptions.${status}`),
+          }))}
+          value={statusFilter}
+          onChange={(value) => updateFilter('status', value)}
+          placeholder={t('orders.allStatuses')}
+          emptyLabel={t('orders.allStatuses')}
+          ariaLabel={t('orders.allStatuses')}
+          allowEmpty
+        />
 
-        <select className="select select--auto" aria-label={t('orders.allDrivers')}>
-          <option value="">{t('orders.allDrivers')}</option>
-          {drivers.map(d => (
-            <option key={d.id} value={d.id}>{d.full_name}</option>
-          ))}
-        </select>
+        <DriverSelect
+          className="driver-select--auto"
+          options={drivers}
+          value={driverFilter}
+          onChange={(value) => updateFilter('driver', value)}
+          placeholder={t('orders.allDrivers')}
+          searchPlaceholder={t('orders.driverSearchPlaceholder')}
+          emptyLabel={t('orders.allDrivers')}
+          allowEmpty
+        />
+
+        <DropdownSelect
+          className="driver-select--auto"
+          compact
+          options={PER_PAGE_OPTIONS.map(value => ({
+            value: String(value),
+            label: String(value),
+          }))}
+          value={String(perPage)}
+          onChange={(value) => updateFilter('per_page', value)}
+          placeholder={String(perPage)}
+          ariaLabel={t('orders.perPage')}
+        />
 
         <div className="toolbar__spacer" />
 
@@ -152,6 +231,49 @@ function Orders() {
             )}
           </tbody>
         </table>
+
+        {total > 0 && (
+          <div className="pagination">
+            <span>
+              {t('orders.showing', {
+                from: (page - 1) * perPage + 1,
+                to: Math.min(page * perPage, total),
+                total,
+              })}
+            </span>
+
+            <div className="pagination__controls">
+              <button
+                type="button"
+                className="pagination__btn"
+                onClick={() => goToPage(page - 1)}
+                disabled={page <= 1}
+              >
+                {t('orders.prev')}
+              </button>
+
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map(pageNumber => (
+                <button
+                  key={pageNumber}
+                  type="button"
+                  className={`pagination__btn${pageNumber === page ? ' is-active' : ''}`}
+                  onClick={() => goToPage(pageNumber)}
+                >
+                  {pageNumber}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                className="pagination__btn"
+                onClick={() => goToPage(page + 1)}
+                disabled={page >= totalPages}
+              >
+                {t('orders.next')}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <Modal

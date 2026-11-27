@@ -103,6 +103,7 @@
   },
   "orders": {
     "searchPlaceholder": "Search by number, client or route...",
+    "driverSearchPlaceholder": "Search by name or phone...",
     "allStatuses": "All statuses",
     "statusOptions": {
       "new": "New",
@@ -110,10 +111,15 @@
       "in_progress": "In progress",
       "delivered": "Delivered",
       "completed": "Completed",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "driverSearchPlaceholder": "Search by name or phone..."
     },
     "allDrivers": "All drivers",
     "create": "+ Create order",
+    "showing": "Showing {{from}}–{{to}} of {{total}}",
+    "prev": "Previous",
+    "next": "Next",
+    "perPage": "Per page",
     "table": {
       "number": "#",
       "client": "Client",
@@ -173,7 +179,8 @@
     "statusUpdated": "Status updated",
     "assignmentSaved": "Assignment saved",
     "assignError": "Assignment error: {{message}}",
-    "deleted": "Order deleted"
+    "deleted": "Order deleted",
+    "assignRequired": "Select a driver and a vehicle"
   },
   "clientTypes": {
     "legal": "Legal entity",

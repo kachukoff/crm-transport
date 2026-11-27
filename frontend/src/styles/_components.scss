@@ -608,6 +608,153 @@
   padding: $space-6;
 }
 
+// --- Driver select ---
+.driver-select {
+  position: relative;
+
+  &--auto {
+    width: auto;
+    min-width: 190px;
+
+    .driver-select__trigger {
+      width: auto;
+      min-width: 190px;
+    }
+  }
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  &__value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__chevron {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+    transition: transform $transition-fast;
+
+    &.is-open {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: $z-dropdown;
+    width: 100%;
+    min-width: 300px;
+    max-width: calc(100vw - 32px);
+    padding: 6px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    box-shadow: var(--shadow-md);
+  }
+
+  &__search {
+    width: 100%;
+    margin-bottom: 6px;
+    padding: 8px 10px;
+    font-size: $font-size-sm;
+  }
+
+  &__list {
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 9px;
+    color: var(--color-text);
+    background: transparent;
+    border: 0;
+    border-radius: $radius-sm;
+    font-family: inherit;
+    font-size: $font-size-sm;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover,
+    &.is-active {
+      background: var(--color-surface-hover);
+    }
+
+    &.is-selected {
+      color: var(--color-primary);
+    }
+  }
+
+  &__option-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    gap: 1px;
+  }
+
+  &__option-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__option-meta {
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: $font-size-xs;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__empty {
+    padding: 12px 10px;
+    color: var(--color-text-muted);
+    font-size: $font-size-sm;
+    text-align: center;
+  }
+}
+
+.driver-select--compact {
+  .driver-select__popover {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .driver-select--auto {
+    width: 100%;
+    min-width: 0;
+
+    .driver-select__trigger {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .driver-select__popover {
+    min-width: 0;
+  }
+}
+
 // --- Адаптив компонентов ---
 @media (max-width: 1100px) {
   .cards-grid {

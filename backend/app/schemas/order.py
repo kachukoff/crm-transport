@@ -58,3 +58,10 @@ class OrderResponse(OrderBase):
 
   class Config:
     from_attributes = True
+
+
+class OrderListResponse(BaseModel):
+  items: list[OrderResponse]
+  total: int
+  limit: int
+  offset: int

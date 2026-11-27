@@ -103,6 +103,7 @@
   },
   "orders": {
     "searchPlaceholder": "Поиск по номеру, клиенту или маршруту...",
+    "driverSearchPlaceholder": "Поиск по ФИО или телефону...",
     "allStatuses": "Все статусы",
     "statusOptions": {
       "new": "Новые",
@@ -114,6 +115,10 @@
     },
     "allDrivers": "Все водители",
     "create": "+ Создать заказ",
+    "showing": "Показано {{from}}–{{to}} из {{total}}",
+    "prev": "Назад",
+    "next": "Вперёд",
+    "perPage": "На странице",
     "table": {
       "number": "№",
       "client": "Клиент",
@@ -173,7 +178,8 @@
     "statusUpdated": "Статус обновлён",
     "assignmentSaved": "Назначение сохранено",
     "assignError": "Ошибка при назначении: {{message}}",
-    "deleted": "Заказ удалён"
+    "deleted": "Заказ удалён",
+    "assignRequired": "Выберите водителя и машину"
   },
   "clientTypes": {
     "legal": "Юридическое лицо",

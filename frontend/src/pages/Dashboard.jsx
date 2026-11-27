@@ -28,10 +28,10 @@ function Dashboard() {
 
     Promise.all([
       api.get('/dashboard/summary'),
-      api.get('/orders/'),
+      api.get('/orders/?limit=5'),
     ]).then(([summaryData, ordersData]) => {
       setSummary(summaryData);
-      setRecentOrders(ordersData.slice(-5).reverse());
+      setRecentOrders(ordersData.items);
       setLoading(false);
     }).catch(err => {
       setError(err.message);

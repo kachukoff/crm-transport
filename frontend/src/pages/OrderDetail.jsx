@@ -6,6 +6,7 @@ import { useToast } from '../components/ToastContext';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
+import DriverSelect from '../components/DriverSelect';
 import ErrorMessage from '../components/ErrorMessage';
 import { formatCurrency, formatDateTime, formatNumber } from '../lib/format';
 import { localizeVehicleBrand, localizeVehicleModel } from '../lib/vehicleNames';
@@ -96,6 +97,12 @@ function OrderDetail() {
 
   const handleAssignSubmit = (e) => {
     e.preventDefault();
+
+    if (!selectedDriverId || !selectedVehicleId) {
+      toast.error(t('orderDetail.assignRequired'));
+      return;
+    }
+
     assignDriver.mutate({
       driver_id: Number(selectedDriverId),
       vehicle_id: Number(selectedVehicleId),
@@ -280,17 +287,13 @@ function OrderDetail() {
         <form onSubmit={handleAssignSubmit}>
           <div className="form-group">
             <label className="form-group__label">{t('orderDetail.driver')}</label>
-            <select
-              className="select"
+            <DriverSelect
+              options={availableDrivers}
               value={selectedDriverId}
-              onChange={(e) => setSelectedDriverId(e.target.value)}
-              required
-            >
-              <option value="">{t('orderDetail.driverPlaceholder')}</option>
-              {availableDrivers.map(d => (
-                <option key={d.id} value={d.id}>{d.full_name}</option>
-              ))}
-            </select>
+              onChange={setSelectedDriverId}
+              placeholder={t('orderDetail.driverPlaceholder')}
+              searchPlaceholder={t('orders.driverSearchPlaceholder')}
+            />
           </div>
           <div className="form-group">
             <label className="form-group__label">{t('orderDetail.vehicle')}</label>

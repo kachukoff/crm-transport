@@ -1,13 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from sqlalchemy import select, delete as sql_delete
+from sqlalchemy import select, delete as sql_delete, func, or_
 from pydantic import BaseModel
 from app.database import get_db
 from app.models.order import Order, OrderStatusHistory
+from app.models.client import Client
 from app.models.driver import Driver
+from app.models.route import Route
 from app.models.vehicle import Vehicle
-from app.schemas.order import OrderCreate, OrderResponse, OrderStatusUpdate
+from app.schemas.order import (
+    OrderCreate,
+    OrderResponse,
+    OrderStatusUpdate,
+    OrderListResponse
+)
 from app.dependencies import require_staff, get_current_user
 from app.models.user import User
 
@@ -45,8 +52,13 @@ async def create_order(order: OrderCreate, db: AsyncSession = Depends(get_db)):
 
 
 # --- СПИСОК ЗАКАЗОВ (только персонал) ---
-@router.get("/", response_model=list[OrderResponse])
+@router.get("/", response_model=OrderListResponse)
 async def get_orders(
+    search: str | None = Query(None, max_length=100),
+    order_status: str | None = Query(None, alias="status"),
+    driver_id: int | None = Query(None, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -58,20 +70,59 @@ async def get_orders(
             selectinload(Order.driver),
             selectinload(Order.vehicle)
         )
-        .order_by(Order.id)
     )
 
     # Если водитель — показываем только его заказы
     if current_user.role == "driver":
         driver_result = await db.execute(select(Driver).where(Driver.user_id == current_user.id))
         driver = driver_result.scalar_one_or_none()
-        if driver:
-            query = query.where(Order.driver_id == driver.id)
-        else:
-            return []  # Если водитель не привязан к карточке — пустой список
+        if not driver:
+            return OrderListResponse(items=[], total=0, limit=limit, offset=offset)
+        query = query.where(Order.driver_id == driver.id)
+    elif driver_id is not None:
+        query = query.where(Order.driver_id == driver_id)
 
-    result = await db.execute(query)
-    return result.scalars().all()
+    if order_status:
+        query = query.where(Order.status == order_status)
+
+    if search and search.strip():
+        term = search.strip().lstrip("#")
+        if term.isdigit():
+            query = query.where(Order.id == int(term))
+        else:
+            pattern = f"%{term}%"
+            query = (
+                query
+                .outerjoin(Order.client)
+                .outerjoin(Order.route)
+                .outerjoin(Order.driver)
+                .outerjoin(Order.vehicle)
+                .where(
+                    or_(
+                        Client.name.ilike(pattern),
+                        Route.from_address.ilike(pattern),
+                        Route.to_address.ilike(pattern),
+                        Driver.full_name.ilike(pattern),
+                        Vehicle.plate_number.ilike(pattern),
+                        Order.cargo_name.ilike(pattern),
+                    )
+                )
+            )
+
+    count_query = select(func.count()).select_from(
+        query.order_by(None).subquery())
+    total = (await db.execute(count_query)).scalar_one()
+
+    result = await db.execute(
+        query.order_by(Order.id.desc()).offset(offset).limit(limit)
+    )
+
+    return OrderListResponse(
+        items=result.scalars().all(),
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
 
 
 # --- ОДИН ЗАКАЗ (для всех авторизованных, с проверкой для водителя) ---
